@@ -127,15 +127,6 @@ export function useAgentMentionConfig({
           }
       )
 
-    if (
-      !files.length &&
-      !knowledgeBases.length &&
-      !mcps.length &&
-      !skills.length &&
-      !subagents.length
-    )
-      return null
-
     return {
       files,
       knowledgeBases,

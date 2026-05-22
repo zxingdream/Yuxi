@@ -39,11 +39,7 @@
     />
 
     <!-- @ 提及选择弹窗 -->
-    <div
-      v-if="mentionPopupVisible"
-      ref="mentionDropdownRef"
-      class="mention-dropdown-wrapper"
-    >
+    <div v-if="mentionPopupVisible" ref="mentionDropdownRef" class="mention-dropdown-wrapper">
       <div class="mention-popup">
         <!-- 文件列表 -->
         <div v-if="mentionItems.files.length > 0 || showFileSearchPrompt" class="mention-group">
@@ -259,15 +255,7 @@ const slots = useSlots()
 
 // @ 提及功能是否启用
 const mentionEnabled = computed(() => {
-  if (!props.mention) return false
-  const { files, knowledgeBases, mcps, skills, subagents } = props.mention
-  return (
-    (Array.isArray(files) && files.length > 0) ||
-    (Array.isArray(knowledgeBases) && knowledgeBases.length > 0) ||
-    (Array.isArray(mcps) && mcps.length > 0) ||
-    (Array.isArray(skills) && skills.length > 0) ||
-    (Array.isArray(subagents) && subagents.length > 0)
-  )
+  return !!props.mention
 })
 
 const mentionTypePrefixMap = {
@@ -538,7 +526,6 @@ const hasAnyItems = computed(() => {
     items.subagents.length > 0
   )
 })
-
 
 const insertMention = (item) => {
   if (!inputRef.value) return
@@ -1000,7 +987,9 @@ defineExpose({
   overflow-y: auto;
   background: var(--gray-0);
   border-radius: 8px;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 -4px 16px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.12);
   border: 1px solid var(--gray-200);
 
   .mention-group {

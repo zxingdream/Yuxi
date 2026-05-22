@@ -16,7 +16,6 @@ from yuxi.repositories.user_repository import UserRepository
 from yuxi.storage.postgres.manager import pg_manager
 from yuxi.utils.logging_config import logger
 
-
 ADMIN_ROLES = {"admin", "superadmin"}
 SANDBOX_PATH_HINT = (
     "请使用 /home/gem/user-data/workspace/...、/home/gem/user-data/uploads/... 或 /home/gem/user-data/outputs/..."

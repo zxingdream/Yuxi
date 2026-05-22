@@ -321,7 +321,9 @@ const refreshFileSystem = async () => {
         (entry) => entry?.is_dir && entry.name === DISPLAY_ROOT_DIRECTORY_NAME
       )
 
-      dynamicTreeData.value = displayRootEntry ? await loadDirectoryChildren(displayRootEntry.path) : []
+      dynamicTreeData.value = displayRootEntry
+        ? await loadDirectoryChildren(displayRootEntry.path)
+        : []
       expandedKeys.value = []
       selectedKeys.value = []
     } else {

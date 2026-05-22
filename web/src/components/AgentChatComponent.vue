@@ -431,7 +431,6 @@ const currentTodos = computed(() => {
   return Array.isArray(todos) ? todos : []
 })
 
-
 const { mentionConfig } = useAgentMentionConfig({
   currentAgentState,
   currentThreadAttachments,
