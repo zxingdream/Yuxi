@@ -386,7 +386,8 @@ const setPanelRatioForViewMode = () => {
 
 const showFilePanel = (mode = 'tree') => {
   sideActive.value = 'file'
-  agentPanelViewMode.value = mode === 'preview' && agentPanelActivePreviewPath.value ? 'preview' : 'tree'
+  agentPanelViewMode.value =
+    mode === 'preview' && agentPanelActivePreviewPath.value ? 'preview' : 'tree'
   setPanelRatioForViewMode()
 }
 

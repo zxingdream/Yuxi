@@ -139,10 +139,7 @@
           </div>
 
           <div v-else class="suggestions-empty">
-            <button
-              class="suggestion-row"
-              @click="() => generateSampleQuestions(false)"
-            >
+            <button class="suggestion-row" @click="() => generateSampleQuestions(false)">
               <RefreshCw class="suggestion-icon" />
               <span class="suggestion-text">生成示例问题</span>
             </button>
@@ -515,7 +512,9 @@ defineExpose({
       border-radius: 6px;
       color: var(--gray-800);
       font-size: 13px;
-      span { font-weight: 500; }
+      span {
+        font-weight: 500;
+      }
     }
 
     .clear-results-btn {

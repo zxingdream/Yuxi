@@ -11,7 +11,6 @@ from sqlalchemy.orm import declarative_base
 from yuxi.storage.postgres.models_business import Base as BusinessBase
 from yuxi.storage.postgres.models_knowledge import Base as KnowledgeBase
 from yuxi.utils import logger
-
 from yuxi.utils.singleton import SingletonMeta
 
 # 合并两个 Base

@@ -64,7 +64,12 @@
               @keydown.esc.stop.prevent="cancelField"
               @blur="cancelField"
             />
-            <button v-else type="button" class="editable-value" @click="startFieldEdit('phone_number')">
+            <button
+              v-else
+              type="button"
+              class="editable-value"
+              @click="startFieldEdit('phone_number')"
+            >
               {{ userStore.phoneNumber || '未设置' }}
             </button>
           </div>
@@ -289,11 +294,7 @@ watch(
   }
 )
 
-watch(
-  () => [userStore.username, userStore.phoneNumber],
-  syncProfileDraft,
-  { immediate: true }
-)
+watch(() => [userStore.username, userStore.phoneNumber], syncProfileDraft, { immediate: true })
 </script>
 
 <style lang="less" scoped>

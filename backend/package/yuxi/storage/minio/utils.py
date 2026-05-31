@@ -7,7 +7,6 @@ import os
 import uuid
 
 from fastapi import UploadFile
-
 from yuxi.utils.upload_utils import read_upload_with_limit
 
 from .client import aupload_file_to_minio

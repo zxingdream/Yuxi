@@ -259,9 +259,7 @@
             </span>
             <span
               >已选择
-              {{
-                selectedWorkspacePaths.length
-              }}
+              {{ selectedWorkspacePaths.length }}
               个文件，注意上传会扁平化上传，不保留文件层级结构</span
             >
           </div>

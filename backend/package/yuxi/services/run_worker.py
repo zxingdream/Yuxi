@@ -10,16 +10,16 @@ from dataclasses import dataclass, field
 
 from sqlalchemy import select
 from sqlalchemy.exc import OperationalError
+from yuxi.agents.mcp.service import ensure_builtin_mcp_servers_in_db
+from yuxi.agents.skills.service import init_builtin_skills
 from yuxi.repositories.agent_run_repository import TERMINAL_RUN_STATUSES, AgentRunRepository
 from yuxi.services.chat_service import stream_agent_chat, stream_agent_resume
-from yuxi.agents.mcp.service import ensure_builtin_mcp_servers_in_db
 from yuxi.services.run_queue_service import (
     append_run_stream_event,
     clear_cancel_signal,
     has_cancel_signal,
     wait_for_cancel_signal,
 )
-from yuxi.agents.skills.service import init_builtin_skills
 from yuxi.storage.postgres.manager import pg_manager
 from yuxi.storage.postgres.models_business import User
 from yuxi.utils.logging_config import logger

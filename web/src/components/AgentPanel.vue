@@ -54,7 +54,10 @@
     </div>
 
     <div class="tab-content">
-      <div class="files-display" :class="{ 'has-preview': hasActivePreview, 'with-tree': treePaneVisible }">
+      <div
+        class="files-display"
+        :class="{ 'has-preview': hasActivePreview, 'with-tree': treePaneVisible }"
+      >
         <div v-if="hasActivePreview" class="preview-pane">
           <AgentFilePreview
             v-if="currentFile"
@@ -619,16 +622,19 @@ onUnmounted(() => {
   revokeCurrentPreviewUrl()
 })
 
-watch(() => props.threadId, (threadId) => {
-  if (threadId) {
-    refreshFileSystem()
-  } else {
-    dynamicTreeData.value = []
-    expandedKeys.value = []
-    selectedKeys.value = []
-    filesystemError.value = ''
+watch(
+  () => props.threadId,
+  (threadId) => {
+    if (threadId) {
+      refreshFileSystem()
+    } else {
+      dynamicTreeData.value = []
+      expandedKeys.value = []
+      selectedKeys.value = []
+      filesystemError.value = ''
+    }
   }
-})
+)
 
 watch([() => props.threadId, () => props.activePreviewPath], loadActivePreview, { immediate: true })
 

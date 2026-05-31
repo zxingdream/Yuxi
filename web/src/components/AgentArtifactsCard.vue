@@ -1,7 +1,12 @@
 <template>
   <section v-if="normalizedArtifacts.length" class="artifacts-list">
     <div v-for="file in normalizedArtifacts" :key="file.path" class="artifact-card">
-      <button type="button" class="item-main" :title="`打开 ${file.name}`" @click="openPreview(file)">
+      <button
+        type="button"
+        class="item-main"
+        :title="`打开 ${file.name}`"
+        @click="openPreview(file)"
+      >
         <component
           :is="getFileIcon(file.path)"
           class="item-icon"
@@ -81,7 +86,10 @@ const parseDownloadFilename = (contentDisposition) => {
 }
 
 const getFileMetaLabel = (path) => {
-  const filename = String(path || '').split('/').pop() || ''
+  const filename =
+    String(path || '')
+      .split('/')
+      .pop() || ''
   if (!filename.includes('.')) return '交付文件'
 
   const extension = filename.split('.').pop()

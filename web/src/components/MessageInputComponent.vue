@@ -99,7 +99,11 @@
           <div
             v-for="(item, index) in mentionItems.knowledgeBases"
             :key="'kb-' + item.value"
-            :class="['mention-item', 'resource-item', { active: isItemSelected('knowledge', index) }]"
+            :class="[
+              'mention-item',
+              'resource-item',
+              { active: isItemSelected('knowledge', index) }
+            ]"
             @click="insertMention(item)"
           >
             <div class="resource-name">
@@ -204,7 +208,11 @@
           <div
             v-for="(item, index) in mentionItems.subagents"
             :key="'subagent-' + item.value"
-            :class="['mention-item', 'resource-item', { active: isItemSelected('subagent', index) }]"
+            :class="[
+              'mention-item',
+              'resource-item',
+              { active: isItemSelected('subagent', index) }
+            ]"
             @click="insertMention(item)"
           >
             <div class="resource-name">
@@ -411,7 +419,10 @@ const getRawNodeLength = (node) => {
   if (isTextNode(node)) return node.textContent?.length || 0
   if (isMentionNode(node)) return node.dataset.mentionRaw?.length || 0
   if (isLineBreakNode(node)) return 1
-  return Array.from(node.childNodes || []).reduce((total, child) => total + getRawNodeLength(child), 0)
+  return Array.from(node.childNodes || []).reduce(
+    (total, child) => total + getRawNodeLength(child),
+    0
+  )
 }
 
 const serializeEditorNode = (node) => {
@@ -462,7 +473,11 @@ const createEditorMentionElement = (segment) => {
 
   const label = document.createElement('span')
   label.className = 'mention-ref-label'
-  label.textContent = getMentionDisplayLabel(segment.type, segment.value, mentionDisplayLabels.value)
+  label.textContent = getMentionDisplayLabel(
+    segment.type,
+    segment.value,
+    mentionDisplayLabels.value
+  )
   token.appendChild(label)
 
   return token
@@ -475,7 +490,9 @@ const renderEditorContent = (raw = '') => {
   editor.replaceChildren()
   parseMentionText(raw).forEach((segment) => {
     editor.appendChild(
-      segment.kind === 'text' ? document.createTextNode(segment.text) : createEditorMentionElement(segment)
+      segment.kind === 'text'
+        ? document.createTextNode(segment.text)
+        : createEditorMentionElement(segment)
     )
   })
   lastSyncedEditorValue = String(raw || '')
@@ -549,7 +566,10 @@ const getDomPointForRawOffset = (rawOffset) => {
   let remaining = offset
 
   const pointBeforeNode = (node) => ({ node: node.parentNode || editor, offset: childIndex(node) })
-  const pointAfterNode = (node) => ({ node: node.parentNode || editor, offset: childIndex(node) + 1 })
+  const pointAfterNode = (node) => ({
+    node: node.parentNode || editor,
+    offset: childIndex(node) + 1
+  })
 
   const visit = (node) => {
     if (!node) return null
@@ -872,7 +892,12 @@ const insertMention = (item) => {
 
   const mentionValue = item.insertValue || item.value
   const mentionText = `${formatMentionToken(item.type, mentionValue)} `
-  const newValue = replaceRawRange(currentValue, activeMention.start, activeMention.end, mentionText)
+  const newValue = replaceRawRange(
+    currentValue,
+    activeMention.start,
+    activeMention.end,
+    mentionText
+  )
   const newCursorPos = activeMention.start + mentionText.length
 
   mentionPopupVisible.value = false

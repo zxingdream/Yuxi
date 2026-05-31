@@ -247,11 +247,7 @@ const renameChat = async (chatId) => {
     }
 
     .actions-mask {
-      background: linear-gradient(
-        to right,
-        transparent,
-        var(--gray-50)
-      );
+      background: linear-gradient(to right, transparent, var(--gray-50));
     }
 
     .more-btn {

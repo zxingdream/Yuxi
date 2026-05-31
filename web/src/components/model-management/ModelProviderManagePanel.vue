@@ -619,54 +619,54 @@ defineExpose({
 
 <template>
   <div class="model-provider-manage-panel">
-        <PageShoulder v-model:search="searchQuery" search-placeholder="搜索供应商...">
-          <template #actions>
-            <a-button type="primary" class="lucide-icon-btn" @click="openCreateProviderModal">
-              <Plus :size="14" />
-              新增供应商
-            </a-button>
-            <a-button class="lucide-icon-btn" @click="loadProviders" :loading="loading">
-              <RefreshCw :size="14" :class="{ spinning: loading }" />
-            </a-button>
-          </template>
-        </PageShoulder>
+    <PageShoulder v-model:search="searchQuery" search-placeholder="搜索供应商...">
+      <template #actions>
+        <a-button type="primary" class="lucide-icon-btn" @click="openCreateProviderModal">
+          <Plus :size="14" />
+          新增供应商
+        </a-button>
+        <a-button class="lucide-icon-btn" @click="loadProviders" :loading="loading">
+          <RefreshCw :size="14" :class="{ spinning: loading }" />
+        </a-button>
+      </template>
+    </PageShoulder>
 
-        <ExtensionCardGrid :min-width="320">
-          <InfoCard
-            v-for="provider in filteredProviders"
-            :key="provider.provider_id"
-            :title="provider.display_name"
-            :subtitle="provider.provider_id"
-            :disabled="!provider.is_enabled"
-            :default-icon="Globe"
-            :info="getProviderInfo(provider)"
-            :status="getProviderStatus(provider)"
-            @click="openEditProviderModal(provider)"
-          >
-            <template #icon>
-              <img
-                v-if="getProviderIcon(provider)"
-                :src="getIconUrl(getProviderIcon(provider))"
-                :alt="provider.display_name"
-              />
-            </template>
-            <template #footer>
-              <button class="view-models-btn" type="button" @click.stop="openModelsModal(provider)">
-                <Settings2 :size="14" />
-                管理模型
-              </button>
-              <a-tooltip title="编辑供应商">
-                <a-button
-                  size="small"
-                  class="lucide-icon-btn"
-                  @click.stop="openEditProviderModal(provider)"
-                >
-                  <Edit3 :size="14" />
-                </a-button>
-              </a-tooltip>
-            </template>
-          </InfoCard>
-        </ExtensionCardGrid>
+    <ExtensionCardGrid :min-width="320">
+      <InfoCard
+        v-for="provider in filteredProviders"
+        :key="provider.provider_id"
+        :title="provider.display_name"
+        :subtitle="provider.provider_id"
+        :disabled="!provider.is_enabled"
+        :default-icon="Globe"
+        :info="getProviderInfo(provider)"
+        :status="getProviderStatus(provider)"
+        @click="openEditProviderModal(provider)"
+      >
+        <template #icon>
+          <img
+            v-if="getProviderIcon(provider)"
+            :src="getIconUrl(getProviderIcon(provider))"
+            :alt="provider.display_name"
+          />
+        </template>
+        <template #footer>
+          <button class="view-models-btn" type="button" @click.stop="openModelsModal(provider)">
+            <Settings2 :size="14" />
+            管理模型
+          </button>
+          <a-tooltip title="编辑供应商">
+            <a-button
+              size="small"
+              class="lucide-icon-btn"
+              @click.stop="openEditProviderModal(provider)"
+            >
+              <Edit3 :size="14" />
+            </a-button>
+          </a-tooltip>
+        </template>
+      </InfoCard>
+    </ExtensionCardGrid>
 
     <!-- Provider Edit Modal -->
     <a-modal
@@ -906,8 +906,16 @@ defineExpose({
                   size="small"
                   class="model-test-button"
                   :title="getModelTestTitle(currentProviderForModels.provider_id, model)"
-                  :loading="modelTestLoadingBySpec[buildModelSpec(currentProviderForModels.provider_id, model.id)]"
-                  :disabled="modelTestLoadingBySpec[buildModelSpec(currentProviderForModels.provider_id, model.id)]"
+                  :loading="
+                    modelTestLoadingBySpec[
+                      buildModelSpec(currentProviderForModels.provider_id, model.id)
+                    ]
+                  "
+                  :disabled="
+                    modelTestLoadingBySpec[
+                      buildModelSpec(currentProviderForModels.provider_id, model.id)
+                    ]
+                  "
                   @click="testModelConnection(currentProviderForModels.provider_id, model)"
                 >
                   测试
@@ -1064,7 +1072,6 @@ defineExpose({
     </a-modal>
   </div>
 </template>
-
 
 <style lang="less" scoped>
 .model-provider-manage-panel {

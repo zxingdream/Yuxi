@@ -6,7 +6,9 @@ import { handleChatError } from '@/utils/errorHandler'
 
 function normalizeAgent(agent) {
   const agentId = agent?.agent_id || agent?.slug || agent?.id
-  return agentId ? { ...agent, id: agentId, agent_id: agentId, slug: agent?.slug || agentId } : agent
+  return agentId
+    ? { ...agent, id: agentId, agent_id: agentId, slug: agent?.slug || agentId }
+    : agent
 }
 
 export const BUILTIN_AGENT_ID = 'default-chatbot'
@@ -55,7 +57,9 @@ export const useAgentStore = defineStore(
 
     const selectedAgent = computed(() => {
       const agentId = selectedAgentId.value
-      return agentId ? agentDetails.value[agentId] || agents.value.find((a) => a.id === agentId) || null : null
+      return agentId
+        ? agentDetails.value[agentId] || agents.value.find((a) => a.id === agentId) || null
+        : null
     })
 
     const agentsList = computed(() => agents.value)
@@ -131,7 +135,9 @@ export const useAgentStore = defineStore(
     function applyConfigDefaults(loadedConfig, configItems = configurableItems.value) {
       const items = { ...configItems }
       Object.keys(items).forEach((key) => {
-        const item = items[key]?.x_oap_ui_config ? { ...items[key], ...items[key].x_oap_ui_config } : items[key]
+        const item = items[key]?.x_oap_ui_config
+          ? { ...items[key], ...items[key].x_oap_ui_config }
+          : items[key]
         const isDefaultAllList = isDefaultAllAgentResourceKind(item?.kind)
         if (loadedConfig[key] === undefined || (loadedConfig[key] === null && !isDefaultAllList)) {
           if (item.default !== undefined) loadedConfig[key] = item.default
@@ -177,7 +183,10 @@ export const useAgentStore = defineStore(
       isLoadingConfig.value = true
       try {
         const detail = await fetchAgentDetail(agentId)
-        const loadedConfig = applyConfigDefaults(extractContext(detail), detail?.configurable_items || {})
+        const loadedConfig = applyConfigDefaults(
+          extractContext(detail),
+          detail?.configurable_items || {}
+        )
         selectedAgentId.value = agentId
         agentConfig.value = loadedConfig
         originalAgentConfig.value = { ...loadedConfig }
@@ -211,7 +220,10 @@ export const useAgentStore = defineStore(
       const created = normalizeAgent(response.agent)
       if (created?.id) {
         agentDetails.value[created.id] = created
-        agents.value = sortAgents([created, ...agents.value.filter((item) => item.id !== created.id)])
+        agents.value = sortAgents([
+          created,
+          ...agents.value.filter((item) => item.id !== created.id)
+        ])
         await selectAgent(created.id)
       }
       return created

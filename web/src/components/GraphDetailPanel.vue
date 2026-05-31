@@ -11,7 +11,11 @@
             <div :class="rowClass(item.data?.label)">
               <span class="detail-label">名称</span>
               <span class="detail-value">
-                <DetailValue :value="item.data?.label" field-key="__label__" :expanded-keys="expandedKeys" />
+                <DetailValue
+                  :value="item.data?.label"
+                  field-key="__label__"
+                  :expanded-keys="expandedKeys"
+                />
               </span>
             </div>
             <div class="detail-row">
@@ -22,12 +26,18 @@
               <div class="detail-row">
                 <span class="detail-label">标签</span>
                 <span class="detail-value">
-                  <a-tag v-for="tag in item.data.original.labels" :key="tag" size="small">{{ tag }}</a-tag>
+                  <a-tag v-for="tag in item.data.original.labels" :key="tag" size="small">{{
+                    tag
+                  }}</a-tag>
                 </span>
               </div>
             </template>
             <template v-if="item.data?.original?.properties">
-              <div v-for="(value, key) in item.data.original.properties" :key="key" :class="rowClass(value)">
+              <div
+                v-for="(value, key) in item.data.original.properties"
+                :key="key"
+                :class="rowClass(value)"
+              >
                 <span class="detail-label">{{ key }}</span>
                 <span class="detail-value">
                   <DetailValue :value="value" :field-key="key" :expanded-keys="expandedKeys" />
@@ -39,11 +49,19 @@
             <div :class="rowClass(item.data?.label)">
               <span class="detail-label">类型</span>
               <span class="detail-value">
-                <DetailValue :value="item.data?.label" field-key="__type__" :expanded-keys="expandedKeys" />
+                <DetailValue
+                  :value="item.data?.label"
+                  field-key="__type__"
+                  :expanded-keys="expandedKeys"
+                />
               </span>
             </div>
             <template v-if="item.data?.original?.properties">
-              <div v-for="(value, key) in filteredEdgeProperties" :key="key" :class="rowClass(value)">
+              <div
+                v-for="(value, key) in filteredEdgeProperties"
+                :key="key"
+                :class="rowClass(value)"
+              >
                 <span class="detail-label">{{ key }}</span>
                 <span class="detail-value">
                   <DetailValue :value="value" :field-key="key" :expanded-keys="expandedKeys" />
@@ -76,15 +94,35 @@ const DetailValue = defineComponent({
       if (typeof v !== 'string') return String(v ?? '')
       if (v.length <= TRUNCATE_LIMIT) return v
       if (props.expandedKeys.has(props.fieldKey)) {
-        return [v, h('a', {
-          class: 'expand-link',
-          onClick: (e) => { e.preventDefault(); props.expandedKeys.delete(props.fieldKey) }
-        }, ' 收起')]
+        return [
+          v,
+          h(
+            'a',
+            {
+              class: 'expand-link',
+              onClick: (e) => {
+                e.preventDefault()
+                props.expandedKeys.delete(props.fieldKey)
+              }
+            },
+            ' 收起'
+          )
+        ]
       }
-      return [v.slice(0, TRUNCATE_LIMIT) + '...', h('a', {
-        class: 'expand-link',
-        onClick: (e) => { e.preventDefault(); props.expandedKeys.add(props.fieldKey) }
-      }, '展开')]
+      return [
+        v.slice(0, TRUNCATE_LIMIT) + '...',
+        h(
+          'a',
+          {
+            class: 'expand-link',
+            onClick: (e) => {
+              e.preventDefault()
+              props.expandedKeys.add(props.fieldKey)
+            }
+          },
+          '展开'
+        )
+      ]
     }
   }
 })
@@ -99,9 +137,12 @@ defineEmits(['close'])
 
 const expandedKeys = reactive(new Set())
 
-watch(() => props.item, () => {
-  expandedKeys.clear()
-})
+watch(
+  () => props.item,
+  () => {
+    expandedKeys.clear()
+  }
+)
 
 const isOverThreshold = (value) => typeof value === 'string' && value.length > STACK_THRESHOLD
 

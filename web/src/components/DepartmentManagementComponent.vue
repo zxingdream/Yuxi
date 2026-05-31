@@ -13,7 +13,9 @@
           title="刷新"
           class="refresh-btn lucide-icon-btn"
         >
-          <template #icon><RefreshCw :size="16" :class="{ spin: departmentManagement.refreshing }" /></template>
+          <template #icon
+            ><RefreshCw :size="16" :class="{ spin: departmentManagement.refreshing }"
+          /></template>
         </a-button>
         <a-button type="primary" @click="showAddDepartmentModal" class="add-btn lucide-icon-btn">
           <template #icon><Plus :size="16" /></template>

@@ -76,9 +76,15 @@ const filteredAgents = computed(() => {
   const filtered = keyword
     ? list.filter(
         (agent) =>
-          String(agent.name || '').toLowerCase().includes(keyword) ||
-          String(agent.id || '').toLowerCase().includes(keyword) ||
-          String(agent.backend_id || '').toLowerCase().includes(keyword)
+          String(agent.name || '')
+            .toLowerCase()
+            .includes(keyword) ||
+          String(agent.id || '')
+            .toLowerCase()
+            .includes(keyword) ||
+          String(agent.backend_id || '')
+            .toLowerCase()
+            .includes(keyword)
       )
     : list
   return [...filtered].sort((a, b) => {
@@ -128,7 +134,9 @@ const agentPreviewIcon = computed(() => agentForm.icon?.trim() || defaultAgentIc
 const selectedBackendOption = computed(() =>
   agentBackendOptions.value.find((backend) => backend.value === agentForm.backend_id)
 )
-const selectedBackendLabel = computed(() => selectedBackendOption.value?.label || agentForm.backend_id || '未选择')
+const selectedBackendLabel = computed(
+  () => selectedBackendOption.value?.label || agentForm.backend_id || '未选择'
+)
 const selectedBackendIcon = computed(() => {
   const backendText = `${agentForm.backend_id} ${selectedBackendLabel.value}`.toLowerCase()
   return backendText.includes('deep') || backendText.includes('search') ? Microscope : Bot
@@ -252,7 +260,9 @@ const saveAgent = async () => {
     return
   }
 
-  const validation = canEditAgentShareConfig.value ? agentShareConfigFormRef.value?.validate?.() : null
+  const validation = canEditAgentShareConfig.value
+    ? agentShareConfigFormRef.value?.validate?.()
+    : null
   if (validation && !validation.valid) {
     agentModalActiveTab.value = 'basic'
     message.error(validation.message)
@@ -264,7 +274,10 @@ const saveAgent = async () => {
     const payload = buildAgentPayload()
     if (editingAgentId.value) {
       const validatedConfig = runtimeConfigFormRef.value?.validateAndFilterConfig?.()
-      if (validatedConfig && JSON.stringify(validatedConfig) !== JSON.stringify(agentStore.agentConfig)) {
+      if (
+        validatedConfig &&
+        JSON.stringify(validatedConfig) !== JSON.stringify(agentStore.agentConfig)
+      ) {
         agentStore.updateAgentConfig(validatedConfig)
       }
       if (agentStore.hasConfigChanges) {
@@ -320,73 +333,73 @@ defineExpose({
 
 <template>
   <div class="agent-manage-panel">
-        <PageShoulder v-model:search="searchQuery" search-placeholder="搜索智能体...">
-          <template #actions>
-            <a-button type="primary" class="lucide-icon-btn" @click="openCreateAgentModal">
-              <Plus :size="14" />
-              新增智能体
-            </a-button>
-            <a-button class="lucide-icon-btn" @click="loadAgents" :loading="agentLoading">
-              <RefreshCw :size="14" :class="{ spinning: agentLoading }" />
-            </a-button>
-          </template>
-        </PageShoulder>
+    <PageShoulder v-model:search="searchQuery" search-placeholder="搜索智能体...">
+      <template #actions>
+        <a-button type="primary" class="lucide-icon-btn" @click="openCreateAgentModal">
+          <Plus :size="14" />
+          新增智能体
+        </a-button>
+        <a-button class="lucide-icon-btn" @click="loadAgents" :loading="agentLoading">
+          <RefreshCw :size="14" :class="{ spinning: agentLoading }" />
+        </a-button>
+      </template>
+    </PageShoulder>
 
-        <ExtensionCardGrid :min-width="320">
-          <InfoCard
-            v-for="agent in filteredAgents"
-            :key="agent.id"
-            :title="agent.name"
-            :subtitle="agent.slug || agent.id"
-            :description="agent.description || '暂无描述'"
-            :default-icon="Bot"
-            :tags="agent.backend_id ? [{ name: agent.backend_id, color: 'blue' }] : []"
-            class="config-card agent-card"
-            @click="canManageAgent(agent) && openEditAgentModal(agent)"
-          >
-            <template #icon>
-              <img
-                class="agent-card-icon-image"
-                :src="getAgentIconSrc(agent)"
-                :alt="`${agent.name || '智能体'}图标`"
-              />
-            </template>
+    <ExtensionCardGrid :min-width="320">
+      <InfoCard
+        v-for="agent in filteredAgents"
+        :key="agent.id"
+        :title="agent.name"
+        :subtitle="agent.slug || agent.id"
+        :description="agent.description || '暂无描述'"
+        :default-icon="Bot"
+        :tags="agent.backend_id ? [{ name: agent.backend_id, color: 'blue' }] : []"
+        class="config-card agent-card"
+        @click="canManageAgent(agent) && openEditAgentModal(agent)"
+      >
+        <template #icon>
+          <img
+            class="agent-card-icon-image"
+            :src="getAgentIconSrc(agent)"
+            :alt="`${agent.name || '智能体'}图标`"
+          />
+        </template>
 
-            <template #status>
-              <a-dropdown v-if="canManageAgent(agent)" :trigger="['click']" placement="bottomRight">
-                <template #overlay>
-                  <a-menu>
-                    <a-menu-item key="edit" @click.stop="openEditAgentModal(agent)">
-                      <span class="agent-card-menu-item">
-                        <Edit3 :size="14" />
-                        编辑智能体
-                      </span>
-                    </a-menu-item>
-                    <a-menu-item
-                      key="delete"
-                      :disabled="isBuiltinAgent(agent)"
-                      @click.stop="deleteAgent(agent)"
-                    >
-                      <span class="agent-card-menu-item" :class="{ danger: !isBuiltinAgent(agent) }">
-                        <Trash2 :size="14" />
-                        删除智能体
-                      </span>
-                    </a-menu-item>
-                  </a-menu>
-                </template>
-                <a-button
-                  type="text"
-                  size="small"
-                  class="agent-card-menu-trigger"
-                  aria-label="智能体操作"
-                  @click.stop
+        <template #status>
+          <a-dropdown v-if="canManageAgent(agent)" :trigger="['click']" placement="bottomRight">
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="edit" @click.stop="openEditAgentModal(agent)">
+                  <span class="agent-card-menu-item">
+                    <Edit3 :size="14" />
+                    编辑智能体
+                  </span>
+                </a-menu-item>
+                <a-menu-item
+                  key="delete"
+                  :disabled="isBuiltinAgent(agent)"
+                  @click.stop="deleteAgent(agent)"
                 >
-                  <MoreVertical :size="16" />
-                </a-button>
-              </a-dropdown>
+                  <span class="agent-card-menu-item" :class="{ danger: !isBuiltinAgent(agent) }">
+                    <Trash2 :size="14" />
+                    删除智能体
+                  </span>
+                </a-menu-item>
+              </a-menu>
             </template>
-          </InfoCard>
-        </ExtensionCardGrid>
+            <a-button
+              type="text"
+              size="small"
+              class="agent-card-menu-trigger"
+              aria-label="智能体操作"
+              @click.stop
+            >
+              <MoreVertical :size="16" />
+            </a-button>
+          </a-dropdown>
+        </template>
+      </InfoCard>
+    </ExtensionCardGrid>
 
     <!-- Agent Edit Modal -->
     <a-modal
@@ -420,7 +433,10 @@ defineExpose({
               <component :is="item.icon" :size="16" />
               <span>{{ item.label }}</span>
             </span>
-            <span v-if="item.key === 'model' && agentStore.hasConfigChanges" class="nav-dirty-dot" />
+            <span
+              v-if="item.key === 'model' && agentStore.hasConfigChanges"
+              class="nav-dirty-dot"
+            />
           </button>
         </aside>
 
@@ -460,10 +476,16 @@ defineExpose({
                       placeholder="标识可选，留空自动生成"
                       aria-label="智能体标识"
                     />
-                    <span v-else class="agent-inline-slug">{{ agentForm.slug || editingAgentId }}</span>
+                    <span v-else class="agent-inline-slug">{{
+                      agentForm.slug || editingAgentId
+                    }}</span>
                   </div>
                 </div>
-                <div class="agent-backend-summary" :class="{ editable: !editingAgentId }" aria-label="智能体后端">
+                <div
+                  class="agent-backend-summary"
+                  :class="{ editable: !editingAgentId }"
+                  aria-label="智能体后端"
+                >
                   <span class="agent-backend-icon">
                     <component :is="selectedBackendIcon" :size="16" />
                   </span>
@@ -520,7 +542,6 @@ defineExpose({
     </a-modal>
   </div>
 </template>
-
 
 <style lang="less" scoped>
 .agent-manage-panel {

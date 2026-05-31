@@ -1,5 +1,10 @@
 <template>
-  <a-dropdown trigger="click" :open="dropdownOpen" :disabled="props.disabled" @open-change="handleOpenChange">
+  <a-dropdown
+    trigger="click"
+    :open="dropdownOpen"
+    :disabled="props.disabled"
+    @open-change="handleOpenChange"
+  >
     <div class="model-select" :class="modelSelectClasses" @click.prevent.stop @mousedown.stop>
       <div class="model-select-content">
         <div class="model-info">
@@ -30,7 +35,12 @@
     <template #overlay>
       <div class="model-dropdown" @click.stop>
         <div class="model-search">
-          <a-input v-model:value="modelSearchKeyword" placeholder="搜索模型" allow-clear @keydown.stop>
+          <a-input
+            v-model:value="modelSearchKeyword"
+            placeholder="搜索模型"
+            allow-clear
+            @keydown.stop
+          >
             <template #suffix>
               <button
                 :disabled="props.disabled || state.refreshingCache"
@@ -46,7 +56,9 @@
         </div>
         <a-menu class="scrollable-menu">
           <a-menu-item v-if="loadingV2Models" key="loading" disabled>加载中...</a-menu-item>
-          <a-menu-item v-else-if="!hasFilteredModels" key="empty" disabled>暂无匹配模型</a-menu-item>
+          <a-menu-item v-else-if="!hasFilteredModels" key="empty" disabled
+            >暂无匹配模型</a-menu-item
+          >
           <template v-else>
             <a-menu-item-group
               v-for="(providerData, providerId) in filteredV2Models"

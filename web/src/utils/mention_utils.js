@@ -9,9 +9,15 @@ export const mentionTypePrefixMap = {
 }
 
 const mentionTypePattern = Object.values(mentionTypePrefixMap).join('|')
-const mentionTokenRegex = new RegExp(`@(${mentionTypePattern}):(?:"((?:\\\\.|[^"\\\\])*)"|(\\S+))`, 'g')
+const mentionTokenRegex = new RegExp(
+  `@(${mentionTypePattern}):(?:"((?:\\\\.|[^"\\\\])*)"|(\\S+))`,
+  'g'
+)
 
-const quoteMentionValue = (value) => String(value ?? '').replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+const quoteMentionValue = (value) =>
+  String(value ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
 const unquoteMentionValue = (value) => String(value ?? '').replace(/\\(["\\])/g, '$1')
 
 export const formatMentionToken = (type, value) => {
@@ -87,7 +93,6 @@ export const buildMentionDisplayLabels = (mention = {}) => {
     setMentionLabel(labels, 'knowledge', kb?.kb_id, label)
     setMentionLabel(labels, 'knowledge', kb?.value, label)
   })
-
   ;(mention.mcps || []).forEach((mcp) => {
     const label = mcp?.name || mcp?.label || mcp?.slug || mcp?.id || mcp?.value || ''
     setMentionLabel(labels, 'mcp', mcp?.slug, label)
@@ -95,7 +100,6 @@ export const buildMentionDisplayLabels = (mention = {}) => {
     setMentionLabel(labels, 'mcp', mcp?.value, label)
     setMentionLabel(labels, 'mcp', mcp?.name, label)
   })
-
   ;(mention.skills || []).forEach((skill) => {
     const label = skill?.name || skill?.label || skill?.slug || skill?.id || skill?.value || ''
     setMentionLabel(labels, 'skill', skill?.slug, label)
@@ -103,7 +107,6 @@ export const buildMentionDisplayLabels = (mention = {}) => {
     setMentionLabel(labels, 'skill', skill?.value, label)
     setMentionLabel(labels, 'skill', skill?.name, label)
   })
-
   ;(mention.subagents || []).forEach((subagent) => {
     const label = subagent?.name || subagent?.label || subagent?.id || subagent?.value || ''
     setMentionLabel(labels, 'subagent', subagent?.id, label)
@@ -153,7 +156,12 @@ export const replaceRawRange = (text = '', start = 0, end = start, replacement =
   return value.slice(0, safeStart) + replacement + value.slice(safeEnd)
 }
 
-export const expandMentionDeletionRange = (text = '', start = 0, end = start, direction = 'backward') => {
+export const expandMentionDeletionRange = (
+  text = '',
+  start = 0,
+  end = start,
+  direction = 'backward'
+) => {
   const value = String(text || '')
   const safeStart = Math.max(0, Math.min(start, value.length))
   const safeEnd = Math.max(safeStart, Math.min(end, value.length))

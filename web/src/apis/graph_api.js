@@ -6,7 +6,13 @@ export const graphApi = {
   },
 
   getSubgraph: async (params) => {
-    const { kb_id, node_label = '*', max_depth = 2, max_nodes = 100, exclude_chunk = false } = params
+    const {
+      kb_id,
+      node_label = '*',
+      max_depth = 2,
+      max_nodes = 100,
+      exclude_chunk = false
+    } = params
 
     if (!kb_id) {
       throw new Error('kb_id is required')

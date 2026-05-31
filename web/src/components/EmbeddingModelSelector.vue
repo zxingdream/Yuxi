@@ -100,7 +100,9 @@ const fetchV2Models = async () => {
 
 const checkV2ModelStatuses = async () => {
   try {
-    const models = Object.values(v2Models.value).flatMap((providerData) => providerData.models || [])
+    const models = Object.values(v2Models.value).flatMap(
+      (providerData) => providerData.models || []
+    )
     await checkV2Statuses(models)
   } catch (error) {
     console.error('检查 embedding 模型状态失败:', error)

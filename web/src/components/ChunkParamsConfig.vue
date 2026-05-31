@@ -175,7 +175,6 @@ const presetDescription = computed(() => getChunkPresetDescription(effectivePres
   margin-bottom: 0;
 }
 
-
 .param-description {
   font-size: 12px;
   color: var(--gray-400);

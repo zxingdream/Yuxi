@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any
 
-
 from yuxi.knowledge.graphs.graph_utils import normalize_entity_name
 
 

@@ -44,7 +44,11 @@
     </div>
 
     <div class="file-table" role="table" aria-label="工作区文件列表">
-      <div class="file-row table-head" :class="{ 'selection-enabled': effectiveSelectionMode }" role="row">
+      <div
+        class="file-row table-head"
+        :class="{ 'selection-enabled': effectiveSelectionMode }"
+        role="row"
+      >
         <span v-if="effectiveSelectionMode" class="selection-cell">
           <a-checkbox
             :checked="allSelected"
@@ -115,7 +119,12 @@
                     <span>下载</span>
                   </span>
                 </a-menu-item>
-                <a-menu-item v-if="!readonly" key="delete" danger @click="$emit('delete-entry', entry)">
+                <a-menu-item
+                  v-if="!readonly"
+                  key="delete"
+                  danger
+                  @click="$emit('delete-entry', entry)"
+                >
                   <span class="menu-item-content">
                     <Trash2 :size="14" />
                     <span>删除</span>

@@ -109,7 +109,10 @@
                           <a-input v-model:value="editForm.slug" disabled />
                         </a-form-item>
                         <a-form-item label="MCP 名称" required class="form-item">
-                          <a-input v-model:value="editForm.name" placeholder="请输入 MCP 展示名称" />
+                          <a-input
+                            v-model:value="editForm.name"
+                            placeholder="请输入 MCP 展示名称"
+                          />
                         </a-form-item>
                         <a-form-item label="传输类型" required class="form-item">
                           <a-select v-model:value="editForm.transport">

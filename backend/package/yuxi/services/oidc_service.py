@@ -18,12 +18,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from yuxi.repositories.user_repository import UserRepository
+from yuxi.services.operation_log_service import log_operation
 from yuxi.storage.postgres.models_business import Department, User
+from yuxi.utils.auth_utils import AuthUtils
 from yuxi.utils.datetime_utils import utc_now_naive
 from yuxi.utils.logging_config import logger
-
-from yuxi.utils.auth_utils import AuthUtils
-from yuxi.services.operation_log_service import log_operation
 
 # 前端 OIDC 回调路由路径（与 web/src/router/index.js 中的路由保持一致）
 FRONTEND_CALLBACK_PATH = "/auth/oidc/callback"

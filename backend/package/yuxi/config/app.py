@@ -97,7 +97,9 @@ class Config(BaseModel):
         self.sandbox_exec_timeout_seconds = int(
             os.getenv("SANDBOX_EXEC_TIMEOUT_SECONDS") or self.sandbox_exec_timeout_seconds or 180
         )
-        self.sandbox_max_output_bytes = int(os.getenv("SANDBOX_MAX_OUTPUT_BYTES") or self.sandbox_max_output_bytes or 262144)
+        self.sandbox_max_output_bytes = int(
+            os.getenv("SANDBOX_MAX_OUTPUT_BYTES") or self.sandbox_max_output_bytes or 262144
+        )
         self.sandbox_keepalive_interval_seconds = int(
             os.getenv("SANDBOX_KEEPALIVE_INTERVAL_SECONDS") or self.sandbox_keepalive_interval_seconds or 30
         )

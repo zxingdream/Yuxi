@@ -2,7 +2,6 @@ import { message } from 'ant-design-vue'
 import { handleChatError } from '@/utils/errorHandler'
 import { unref } from 'vue'
 
-
 export function useAgentStreamHandler({
   getThreadState,
   processApprovalInStream,
@@ -68,7 +67,6 @@ export function useAgentStreamHandler({
           threadState.isStreaming = false
           threadState.replyLoadingVisible = false
           threadState.pendingRequestId = null
-
         }
         return true
 

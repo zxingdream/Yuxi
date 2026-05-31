@@ -10,7 +10,6 @@ from langgraph.prebuilt.tool_node import ToolRuntime
 from langgraph.types import Command, interrupt
 from pydantic import BaseModel, Field
 
-from yuxi import config
 from yuxi.agents.toolkits.registry import ToolExtraMetadata, _all_tool_instances, _extra_registry, tool
 from yuxi.storage.minio import aupload_file_to_minio
 from yuxi.utils import logger

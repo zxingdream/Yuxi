@@ -6,6 +6,7 @@ from typing import Any
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHash, VerificationError, VerifyMismatchError
+
 from yuxi.utils.datetime_utils import utc_now
 
 JWT_ALGORITHM = "HS256"

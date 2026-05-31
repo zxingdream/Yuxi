@@ -25,7 +25,11 @@
         </a-select>
       </template>
       <template #actions>
-        <a-button type="primary" :disabled="!kbTypes.length" @click="state.openNewDatabaseModel = true">
+        <a-button
+          type="primary"
+          :disabled="!kbTypes.length"
+          @click="state.openNewDatabaseModel = true"
+        >
           <PlusOutlined /> 新建知识库
         </a-button>
       </template>
@@ -100,7 +104,8 @@
             class="form-section compact-section"
           >
             <h3 class="section-title">
-              {{ field.label || field.key }}<span v-if="field.required" class="required-mark">*</span>
+              {{ field.label || field.key
+              }}<span v-if="field.required" class="required-mark">*</span>
             </h3>
             <a-input-password
               v-if="field.type === 'password'"
@@ -150,7 +155,11 @@
         <!-- 共享配置 -->
         <div class="form-section compact-section">
           <h3 class="section-title">共享设置</h3>
-          <ShareConfigForm ref="shareConfigFormRef" v-model="shareConfig" :auto-select-user-dept="true" />
+          <ShareConfigForm
+            ref="shareConfigFormRef"
+            v-model="shareConfig"
+            :auto-select-user-dept="true"
+          />
         </div>
       </div>
       <template #footer>
@@ -305,9 +314,7 @@ const orderedKbTypes = computed(() => supportedKbTypes.value)
 
 const selectedKbTypeInfo = computed(() => supportedKbTypes.value[newDatabase.kb_type] || null)
 
-const createParamOptions = computed(
-  () => selectedKbTypeInfo.value?.create_params?.options || []
-)
+const createParamOptions = computed(() => selectedKbTypeInfo.value?.create_params?.options || [])
 
 const getKbTypeDescription = (typeInfo) => typeInfo?.description || ''
 
@@ -401,13 +408,15 @@ const buildRequestData = () => {
   }
 
   if (selectedKbTypeInfo.value?.requires_embedding_model) {
-    requestData.embedding_model_spec = newDatabase.embedding_model_spec || configStore.config.embed_model
+    requestData.embedding_model_spec =
+      newDatabase.embedding_model_spec || configStore.config.embed_model
     requestData.additional_params.chunk_preset_id = newDatabase.chunk_preset_id || 'general'
   }
 
   requestData.share_config = {
     access_level: shareConfig.value.access_level,
-    department_ids: shareConfig.value.access_level === 'department' ? shareConfig.value.department_ids || [] : [],
+    department_ids:
+      shareConfig.value.access_level === 'department' ? shareConfig.value.department_ids || [] : [],
     user_uids: shareConfig.value.access_level === 'user' ? shareConfig.value.user_uids || [] : []
   }
 

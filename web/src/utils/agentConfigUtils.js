@@ -22,7 +22,15 @@ export const getAgentConfigOptions = (item) => (Array.isArray(item?.options) ? i
 
 export const getAgentConfigOptionValue = (option) => {
   if (typeof option !== 'object' || option === null) return option
-  return option.key || option.id || option.value || option.name || option.db_id || option.slug || option.label
+  return (
+    option.key ||
+    option.id ||
+    option.value ||
+    option.name ||
+    option.db_id ||
+    option.slug ||
+    option.label
+  )
 }
 
 export const getAgentConfigOptionLabel = (option) => {

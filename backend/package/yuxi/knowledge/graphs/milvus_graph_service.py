@@ -15,6 +15,9 @@ from yuxi.knowledge.graphs.graph_utils import (
     normalize_entity_name,
 )
 from yuxi.knowledge.graphs.milvus_graph_vector_store import MilvusGraphVectorStore
+from yuxi.repositories.knowledge_base_repository import KnowledgeBaseRepository
+from yuxi.repositories.knowledge_chunk_repository import KnowledgeChunkRepository
+from yuxi.repositories.knowledge_graph_repository import KnowledgeGraphRepository
 from yuxi.storage.neo4j import (
     Neo4jConnectionManager,
     get_shared_neo4j_connection,
@@ -22,9 +25,6 @@ from yuxi.storage.neo4j import (
     neo4j_write,
     safe_neo4j_label,
 )
-from yuxi.repositories.knowledge_base_repository import KnowledgeBaseRepository
-from yuxi.repositories.knowledge_chunk_repository import KnowledgeChunkRepository
-from yuxi.repositories.knowledge_graph_repository import KnowledgeGraphRepository
 from yuxi.utils import logger
 from yuxi.utils.datetime_utils import utc_isoformat
 

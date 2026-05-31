@@ -5,7 +5,6 @@ from yuxi.knowledge.chunking.ragflow_like.presets import resolve_chunk_processin
 from yuxi.utils import hashstr, logger
 from yuxi.utils.datetime_utils import utc_isoformat
 
-
 _DROPPED_PROCESSING_PARAM_KEYS = {
     "_preprocessed_map",
     "auto_index",

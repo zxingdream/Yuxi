@@ -33,6 +33,7 @@ CHUNK_PRESET_DESCRIPTIONS: dict[str, str] = {
 CHUNK_ENGINE_VERSION = "ragflow_like_v1"
 GENERAL_INTERNAL_PARSER_ID = "naive"
 
+
 def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
     result = deepcopy(base)
     for key, value in (override or {}).items():

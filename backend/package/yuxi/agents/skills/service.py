@@ -16,9 +16,10 @@ from typing import Any
 import yaml
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from yuxi import config as sys_config
-from yuxi.agents.skills.repository import SkillRepository
 from yuxi.agents.mcp.service import get_enabled_mcp_server_slugs
+from yuxi.agents.skills.repository import SkillRepository
 from yuxi.storage.postgres.models_business import Skill, User
 from yuxi.utils.logging_config import logger
 

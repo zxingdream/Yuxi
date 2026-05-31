@@ -249,7 +249,11 @@ const isBinaryPreview = (previewType) => previewType === 'image' || previewType 
 const createBinaryPreviewUrl = async (entry, response) => {
   const downloadResponse =
     entry.source === 'knowledge'
-      ? await downloadWorkspaceKnowledgeFile(entry.kb_id, entry.file_id, response.variant || 'original')
+      ? await downloadWorkspaceKnowledgeFile(
+          entry.kb_id,
+          entry.file_id,
+          response.variant || 'original'
+        )
       : await downloadWorkspaceFile(entry.path)
   const blob = await downloadResponse.blob()
   return window.URL.createObjectURL(blob)
@@ -485,7 +489,11 @@ const selectKnowledgePath = async (path) => {
   const targetIndex = knowledgeBreadcrumbItems.value.findIndex((item) => item.path === path)
   if (targetIndex < 0) return
   const breadcrumbs = knowledgeBreadcrumbItems.value.slice(0, targetIndex + 1)
-  await loadKnowledgeEntries(selectedDatabase.value, breadcrumbs.at(-1)?.parentId || null, breadcrumbs)
+  await loadKnowledgeEntries(
+    selectedDatabase.value,
+    breadcrumbs.at(-1)?.parentId || null,
+    breadcrumbs
+  )
 }
 
 const handleSelectListPath = async (path) => {
@@ -542,9 +550,15 @@ const handleSelectEntry = async (entry) => {
 const handleSwitchKnowledgeVariant = async (variant) => {
   const entry = selectedEntry.value
   if (!entry || entry.source !== 'knowledge' || !entry.kb_id || !entry.file_id) return
-  if (previewFile.value?.variant === variant || previewFile.value?.previewVariant === variant) return
+  if (previewFile.value?.variant === variant || previewFile.value?.previewVariant === variant)
+    return
 
-  await loadKnowledgePreview(entry, variant, previewFile.value || entry, KNOWLEDGE_PREVIEW_SWITCH_MESSAGES)
+  await loadKnowledgePreview(
+    entry,
+    variant,
+    previewFile.value || entry,
+    KNOWLEDGE_PREVIEW_SWITCH_MESSAGES
+  )
 }
 
 const closePreview = () => {

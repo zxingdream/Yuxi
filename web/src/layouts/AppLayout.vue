@@ -278,7 +278,7 @@ provide('settingsModal', {
           :to="item.path"
           v-show="!item.hidden"
           class="nav-item"
-          :class="{ active: isNavItemActive(item)}"
+          :class="{ active: isNavItemActive(item) }"
           :active-class="item.action ? '' : 'active'"
           @click.stop
         >
@@ -805,5 +805,4 @@ div.header,
     }
   }
 }
-
 </style>

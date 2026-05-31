@@ -82,11 +82,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item
-              name="neighbors_count"
-              :labelCol="{ span: 24 }"
-              :wrapperCol="{ span: 24 }"
-            >
+            <a-form-item name="neighbors_count" :labelCol="{ span: 24 }" :wrapperCol="{ span: 24 }">
               <template #label>
                 <span class="field-label-with-help">
                   候选 Chunk 数量
@@ -168,7 +164,12 @@
         </div>
         <div class="footer-actions">
           <a-button :disabled="generating" @click="handleCancel">取消</a-button>
-          <a-button type="primary" :loading="generating" :disabled="generating" @click="handleGenerate">
+          <a-button
+            type="primary"
+            :loading="generating"
+            :disabled="generating"
+            @click="handleGenerate"
+          >
             确定
           </a-button>
         </div>

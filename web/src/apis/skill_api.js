@@ -1,4 +1,12 @@
-import { apiGet, apiPost, apiDelete, apiAdminGet, apiAdminPost, apiAdminPut, apiAdminDelete } from './base'
+import {
+  apiGet,
+  apiPost,
+  apiDelete,
+  apiAdminGet,
+  apiAdminPost,
+  apiAdminPut,
+  apiAdminDelete
+} from './base'
 
 const BASE_URL = '/api/system/skills'
 const USER_BASE_URL = '/api/skills'

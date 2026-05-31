@@ -16,9 +16,7 @@
       </div>
     </div>
 
-    <div class="env-tip">
-      保存后仅对新建沙盒生效，已运行沙盒不会热更新。
-    </div>
+    <div class="env-tip">保存后仅对新建沙盒生效，已运行沙盒不会热更新。</div>
 
     <a-spin :spinning="loading">
       <McpEnvEditor :modelValue="draftEnv" @update:modelValue="updateDraftEnv" />

@@ -21,11 +21,7 @@
               class="config-alert"
             />
             <!-- 统一显示所有配置项 -->
-            <a-empty
-              v-if="isCurrentSegmentEmpty"
-              description="暂无配置项"
-              class="config-empty"
-            />
+            <a-empty v-if="isCurrentSegmentEmpty" description="暂无配置项" class="config-empty" />
             <template v-for="(value, key) in filteredConfigurableItems" :key="key">
               <a-form-item :label="getConfigLabel(key, value)" :name="key" class="config-item">
                 <p v-if="value.description" class="config-description">{{ value.description }}</p>

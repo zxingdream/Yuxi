@@ -190,7 +190,9 @@
                     <div class="dependency-title-block">
                       <div class="dependency-title-row">
                         <h4>{{ group.title }}</h4>
-                        <span class="dependency-count">已选择 {{ getDependencyValues(group).length }} 项</span>
+                        <span class="dependency-count"
+                          >已选择 {{ getDependencyValues(group).length }} 项</span
+                        >
                       </div>
                       <p>{{ group.description }}</p>
                     </div>
@@ -220,7 +222,10 @@
                             @mousedown.stop
                             @click.stop
                           />
-                          <div v-if="getFilteredDependencyOptions(group).length" class="selection-list">
+                          <div
+                            v-if="getFilteredDependencyOptions(group).length"
+                            class="selection-list"
+                          >
                             <div
                               v-for="option in getFilteredDependencyOptions(group)"
                               :key="option.value"
@@ -230,15 +235,35 @@
                               class="selection-item"
                               :class="{ selected: isDependencySelected(group, option.value) }"
                               @mousedown.stop
-                              @click.stop="toggleDependency(group, option.value, !isDependencySelected(group, option.value))"
-                              @keydown.enter.prevent="toggleDependency(group, option.value, !isDependencySelected(group, option.value))"
-                              @keydown.space.prevent="toggleDependency(group, option.value, !isDependencySelected(group, option.value))"
+                              @click.stop="
+                                toggleDependency(
+                                  group,
+                                  option.value,
+                                  !isDependencySelected(group, option.value)
+                                )
+                              "
+                              @keydown.enter.prevent="
+                                toggleDependency(
+                                  group,
+                                  option.value,
+                                  !isDependencySelected(group, option.value)
+                                )
+                              "
+                              @keydown.space.prevent="
+                                toggleDependency(
+                                  group,
+                                  option.value,
+                                  !isDependencySelected(group, option.value)
+                                )
+                              "
                             >
                               <span class="selection-item-content">
                                 <a-checkbox
                                   :checked="isDependencySelected(group, option.value)"
                                   @click.stop
-                                  @change="toggleDependency(group, option.value, $event.target.checked)"
+                                  @change="
+                                    toggleDependency(group, option.value, $event.target.checked)
+                                  "
                                 />
                                 <span class="selection-label">{{ option.label }}</span>
                               </span>
@@ -250,7 +275,9 @@
                         </div>
                       </template>
                     </a-dropdown>
-                    <a-button v-else size="small" disabled class="dependency-action-btn">系统维护</a-button>
+                    <a-button v-else size="small" disabled class="dependency-action-btn"
+                      >系统维护</a-button
+                    >
                   </div>
 
                   <div v-if="getDependencyValues(group).length" class="dependency-chip-list">
@@ -388,7 +415,9 @@ const selectedFilePreview = computed(() => ({
 
 const toolDependencyOptions = computed(() =>
   (dependencyOptions.tools || []).map((i) =>
-    typeof i === 'object' ? { label: i.name || i.slug, value: i.slug || i.id } : { label: i, value: i }
+    typeof i === 'object'
+      ? { label: i.name || i.slug, value: i.slug || i.id }
+      : { label: i, value: i }
   )
 )
 const mcpDependencyOptions = computed(() =>
@@ -441,7 +470,9 @@ const getDependencyOptionLabel = (group, value) => {
 }
 
 const getFilteredDependencyOptions = (group) => {
-  const keyword = String(dependencySearch[group.key] || '').trim().toLowerCase()
+  const keyword = String(dependencySearch[group.key] || '')
+    .trim()
+    .toLowerCase()
   if (!keyword) return group.options
   return group.options.filter((option) => {
     const label = String(option.label || '').toLowerCase()

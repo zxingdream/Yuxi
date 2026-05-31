@@ -150,7 +150,9 @@
                     status="active"
                     :show-info="false"
                   />
-                  <span class="run-progress-message">{{ getRunProgressMessage(latestEvaluation) }}</span>
+                  <span class="run-progress-message">{{
+                    getRunProgressMessage(latestEvaluation)
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -221,7 +223,11 @@
                     ok-text="确定"
                     cancel-text="取消"
                   >
-                    <a href="" class="history-action-link history-action-link-danger" @click.prevent>
+                    <a
+                      href=""
+                      class="history-action-link history-action-link-danger"
+                      @click.prevent
+                    >
                       删除
                     </a>
                   </a-popconfirm>
@@ -668,15 +674,11 @@ const loadResultsWithPagination = async () => {
 
   try {
     resultsLoading.value = true
-    const response = await evaluationApi.getRunResults(
-      props.kbId,
-      selectedResult.value.run_id,
-      {
-        page: currentPage.value,
-        pageSize: pageSize.value,
-        errorOnly: showErrorsOnly.value
-      }
-    )
+    const response = await evaluationApi.getRunResults(props.kbId, selectedResult.value.run_id, {
+      page: currentPage.value,
+      pageSize: pageSize.value,
+      errorOnly: showErrorsOnly.value
+    })
 
     if (response.message === 'success' && response.data) {
       const resultData = response.data
@@ -773,7 +775,8 @@ const onDatasetChanged = (datasetId) => {
   }
 }
 
-const hasRunningEvaluation = () => evaluationHistory.value.some((record) => record.status === 'running')
+const hasRunningEvaluation = () =>
+  evaluationHistory.value.some((record) => record.status === 'running')
 
 const stopEvaluationRefresh = () => {
   if (evaluationRefreshTimer) {
@@ -1035,7 +1038,8 @@ const formatRunDuration = (record) => {
 }
 
 const getRunProgress = (record) => {
-  if (isFiniteNumber(record?.progress)) return Math.max(0, Math.min(Math.round(record.progress), 100))
+  if (isFiniteNumber(record?.progress))
+    return Math.max(0, Math.min(Math.round(record.progress), 100))
 
   const total = Number(record?.total_items || 0)
   if (!total) return 0
@@ -1051,7 +1055,9 @@ const getRunProgressMessage = (record) => {
 }
 
 const formatLatestRingValue = (record) =>
-  record?.status === 'running' ? `${getRunProgress(record)}%` : formatPercent(record?.overall_score, 0)
+  record?.status === 'running'
+    ? `${getRunProgress(record)}%`
+    : formatPercent(record?.overall_score, 0)
 
 const getLatestRingClass = (record) =>
   record?.status === 'running' ? 'score-running' : getScoreLevelClass(record?.overall_score)

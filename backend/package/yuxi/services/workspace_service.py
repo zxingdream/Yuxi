@@ -14,10 +14,10 @@ from fastapi.responses import FileResponse, StreamingResponse
 from yuxi.agents.backends.sandbox.paths import _global_user_data_dir, ensure_workspace_default_files
 from yuxi.services.file_preview import detect_preview_type
 from yuxi.services.mention_search_service import invalidate_workspace_mention_cache
-from yuxi.utils.upload_utils import MAX_UPLOAD_SIZE_BYTES, write_upload_to_buffer
 from yuxi.storage.postgres.models_business import User
 from yuxi.utils.datetime_utils import utc_isoformat_from_timestamp
 from yuxi.utils.paths import VIRTUAL_PATH_WORKSPACE, WORKSPACE_DIR_NAME
+from yuxi.utils.upload_utils import MAX_UPLOAD_SIZE_BYTES, write_upload_to_buffer
 
 EDITABLE_WORKSPACE_SUFFIXES = {".md", ".markdown", ".mdx", ".txt"}
 MAX_WORKSPACE_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_BYTES

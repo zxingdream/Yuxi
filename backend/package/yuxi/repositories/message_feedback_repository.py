@@ -34,8 +34,6 @@ class MessageFeedbackRepository:
         """检查用户是否已对消息反馈"""
         async with pg_manager.get_async_session_context() as session:
             result = await session.execute(
-                select(MessageFeedback.id).where(
-                    MessageFeedback.message_id == message_id, MessageFeedback.uid == uid
-                )
+                select(MessageFeedback.id).where(MessageFeedback.message_id == message_id, MessageFeedback.uid == uid)
             )
             return result.scalar_one_or_none() is not None

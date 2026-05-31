@@ -67,7 +67,10 @@
     >
       <a-form layout="vertical" class="extension-form">
         <a-form-item label="标识" required class="form-item">
-          <a-input v-model:value="form.slug" placeholder="请输入 SubAgent 稳定标识，如 research-agent" />
+          <a-input
+            v-model:value="form.slug"
+            placeholder="请输入 SubAgent 稳定标识，如 research-agent"
+          />
         </a-form-item>
         <a-form-item label="名称" required class="form-item">
           <a-input v-model:value="form.name" placeholder="请输入 SubAgent 展示名称" />
@@ -166,7 +169,14 @@ const navigateToDetail = (agent) => {
 }
 
 const handleSubagentAdd = () => {
-  Object.assign(form, { slug: '', name: '', description: '', system_prompt: '', tools: [], model: '' })
+  Object.assign(form, {
+    slug: '',
+    name: '',
+    description: '',
+    system_prompt: '',
+    tools: [],
+    model: ''
+  })
   formModalVisible.value = true
 }
 

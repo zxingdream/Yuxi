@@ -8,7 +8,6 @@ from yuxi.models.chat import select_model
 
 from .base import GraphExtractor
 
-
 DEFAULT_TRIPLE_EXTRACTION_PROMPT = """请从下面文本中抽取实体和实体关系，返回严格 JSON，不要输出解释。
 JSON 格式：
 {

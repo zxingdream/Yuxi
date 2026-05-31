@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from yuxi.agents.skills.service import import_skill_dir, is_valid_skill_slug
 
 if TYPE_CHECKING:

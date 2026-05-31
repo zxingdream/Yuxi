@@ -94,7 +94,10 @@
       class="file-content"
       :class="[
         contentClass,
-        { 'is-iframe-preview': file?.previewType === 'pdf' || (isHtmlFile && htmlPreviewMode === 'render') }
+        {
+          'is-iframe-preview':
+            file?.previewType === 'pdf' || (isHtmlFile && htmlPreviewMode === 'render')
+        }
       ]"
     >
       <div v-if="canEdit && editMode === 'edit'" class="edit-floating-actions">
@@ -110,12 +113,7 @@
           <span v-if="saving">保存中...</span>
           <span v-else>保存</span>
         </button>
-        <button
-          class="edit-floating-btn"
-          :disabled="saving"
-          @click="cancelEdit"
-          title="取消"
-        >
+        <button class="edit-floating-btn" :disabled="saving" @click="cancelEdit" title="取消">
           <X :size="16" />
           <span>取消</span>
         </button>

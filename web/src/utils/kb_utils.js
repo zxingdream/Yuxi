@@ -4,7 +4,8 @@ import { Database, DatabaseZap } from 'lucide-vue-next'
 const ICON_BASE = 'https://registry.npmmirror.com/@lobehub/icons-static-svg/latest/files/icons'
 
 const createBrandIcon = (url) => {
-  const Icon = ({ size = 20 }) => h('img', { src: url, style: { width: size + 'px', height: size + 'px' } })
+  const Icon = ({ size = 20 }) =>
+    h('img', { src: url, style: { width: size + 'px', height: size + 'px' } })
   Icon.inheritAttrs = false
   return Icon
 }
@@ -44,7 +45,9 @@ export const getKbTypeColor = (type) => {
 const READ_ONLY_KB_TYPES = new Set(['dify', 'notion'])
 
 export const isReadOnlyDatabase = (database, kbTypes = {}) => {
-  const kbType = (typeof database === 'string' ? database : database?.kb_type || 'milvus').toLowerCase()
+  const kbType = (
+    typeof database === 'string' ? database : database?.kb_type || 'milvus'
+  ).toLowerCase()
 
   if (database?.supports_documents !== undefined) {
     return database.supports_documents === false

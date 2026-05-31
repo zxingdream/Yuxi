@@ -54,14 +54,23 @@
       </template>
     </PageShoulder>
 
-    <div v-if="filteredInstalledSkills.length === 0" class="extension-card-grid-empty-state skill-empty-state">
+    <div
+      v-if="filteredInstalledSkills.length === 0"
+      class="extension-card-grid-empty-state skill-empty-state"
+    >
       <div class="skill-empty-card">
         <div class="skill-empty-icon">
           <BookMarked :size="22" />
         </div>
-        <div class="skill-empty-title">{{ searchQuery ? '没有匹配的 Skill' : '还没有添加 Skill' }}</div>
+        <div class="skill-empty-title">
+          {{ searchQuery ? '没有匹配的 Skill' : '还没有添加 Skill' }}
+        </div>
         <div class="skill-empty-desc">
-          {{ searchQuery ? '换个关键词试试，或清空搜索条件。' : '可以从远程仓库安装，或上传本地 Skill 文件。' }}
+          {{
+            searchQuery
+              ? '换个关键词试试，或清空搜索条件。'
+              : '可以从远程仓库安装，或上传本地 Skill 文件。'
+          }}
         </div>
       </div>
     </div>
@@ -409,7 +418,9 @@
               </div>
             </div>
             <a-tag v-if="item.success === false" color="red">解析失败</a-tag>
-            <a-tag v-else color="blue">{{ sourceTypeLabel(item.source_type || pendingDraft.source_type) }}</a-tag>
+            <a-tag v-else color="blue">{{
+              sourceTypeLabel(item.source_type || pendingDraft.source_type)
+            }}</a-tag>
           </div>
         </div>
         <div class="draft-share-title">生效范围</div>
@@ -488,7 +499,9 @@ const installedSkillCards = computed(() =>
       sourceType,
       sourceLabel: sourceTypeLabel(sourceType),
       status:
-        skill.enabled === false ? { label: '已禁用', level: 'default' } : { label: '已启用', level: 'success' }
+        skill.enabled === false
+          ? { label: '已禁用', level: 'default' }
+          : { label: '已启用', level: 'success' }
     }
   })
 )
@@ -727,7 +740,9 @@ const normalizePendingDraft = (draftPayload) => {
 const openDraftConfirmation = async (draftPayload) => {
   const draft = normalizePendingDraft(draftPayload)
   if (!draft.draft_ids.length || !draft.items.some((item) => item.success !== false)) {
-    await Promise.allSettled(draft.draft_ids.map((draftId) => skillApi.discardSkillInstallDraft(draftId)))
+    await Promise.allSettled(
+      draft.draft_ids.map((draftId) => skillApi.discardSkillInstallDraft(draftId))
+    )
     message.error('没有可添加的 Skill')
     return false
   }
@@ -1006,7 +1021,6 @@ defineExpose({
   line-height: 20px;
 }
 
-
 .card-wrapper {
   position: relative;
 
@@ -1174,7 +1188,6 @@ defineExpose({
     padding: 4px 0 8px 0;
   }
 
-
   .skills-list-section {
     margin-top: 12px;
     border: 1px solid var(--gray-150);
@@ -1309,7 +1322,6 @@ defineExpose({
       cursor: help;
     }
   }
-
 
   .modal-footer-actions {
     display: flex;

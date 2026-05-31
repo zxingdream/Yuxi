@@ -4,11 +4,10 @@ import inspect
 from typing import Any
 
 from langgraph.prebuilt.tool_node import ToolRuntime
-
-from yuxi.agents.toolkits.registry import tool
 from pydantic import BaseModel, Field
 
 from yuxi import knowledge_base
+from yuxi.agents.toolkits.registry import tool
 from yuxi.knowledge.base import KnowledgeBase
 from yuxi.knowledge.schemas import (
     FindInputSchema,
@@ -226,11 +225,7 @@ async def query_kb(kb_id: str, query_text: str, file_name: str | None = None, ru
         else:
             result = retriever(query_text, **kwargs)
 
-        if (
-            isinstance(result, dict)
-            and result.get("kb_id") == target_kb_id
-            and isinstance(result.get("results"), list)
-        ):
+        if isinstance(result, dict) and result.get("kb_id") == target_kb_id and isinstance(result.get("results"), list):
             return SearchOutputSchema(**result).model_dump()
         return KnowledgeBase.build_search_output(target_kb_id, result)
 

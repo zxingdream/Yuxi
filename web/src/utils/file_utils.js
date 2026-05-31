@@ -74,9 +74,12 @@ const FILE_ICON_CONFIG = {
 }
 
 const getFileIconConfig = (filename) => {
-  const normalizedName = String(filename || '').trim().toLowerCase()
+  const normalizedName = String(filename || '')
+    .trim()
+    .toLowerCase()
   if (!normalizedName) return DEFAULT_FILE_ICON
-  if (normalizedName.startsWith('http://') || normalizedName.startsWith('https://')) return LINK_FILE_ICON
+  if (normalizedName.startsWith('http://') || normalizedName.startsWith('https://'))
+    return LINK_FILE_ICON
 
   const cleanName = normalizedName.split(/[?#]/)[0]
   const extension = cleanName.includes('.') ? cleanName.split('.').pop() : cleanName

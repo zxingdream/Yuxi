@@ -33,7 +33,6 @@ from yuxi.utils.paths import (
 
 from .provider import get_sandbox_provider, sandbox_id_for_thread
 
-
 _USER_DATA_ROOT = "/" + VIRTUAL_PATH_PREFIX.strip("/")
 _WORKSPACE_ROOT = f"{_USER_DATA_ROOT}/{WORKSPACE_DIR_NAME}"
 _UPLOADS_ROOT = f"{_USER_DATA_ROOT}/{UPLOADS_DIR_NAME}"

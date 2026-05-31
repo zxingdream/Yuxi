@@ -61,7 +61,6 @@
     </a-dropdown>
     <a-button v-else-if="showButton" type="primary" @click="goToLogin"> 登录 </a-button>
 
-
     <!-- 调试面板 Modal -->
     <DebugComponent v-model:show="showDebug" />
   </div>
@@ -315,7 +314,6 @@ const openProfile = () => {
     color: var(--main-color);
   }
 }
-
 
 :deep(.ant-dropdown-menu) {
   padding: 8px 0;

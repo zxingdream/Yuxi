@@ -29,7 +29,11 @@
               class="card-action"
               @click.stop
             >
-              <a-dropdown :trigger="['click']" placement="bottomRight" overlay-class-name="share-selection-popover">
+              <a-dropdown
+                :trigger="['click']"
+                placement="bottomRight"
+                overlay-class-name="share-selection-popover"
+              >
                 <a-button
                   size="small"
                   class="select-action lucide-icon-btn"
@@ -66,18 +70,44 @@
                         :aria-checked="isSelected(option.value, item.value)"
                         :tabindex="item.disabled ? -1 : 0"
                         class="selection-item"
-                        :class="{ selected: isSelected(option.value, item.value), locked: item.disabled }"
+                        :class="{
+                          selected: isSelected(option.value, item.value),
+                          locked: item.disabled
+                        }"
                         @mousedown.stop
-                        @click.stop="!item.disabled && toggleSelection(option.value, item.value, !isSelected(option.value, item.value))"
-                        @keydown.enter.prevent="!item.disabled && toggleSelection(option.value, item.value, !isSelected(option.value, item.value))"
-                        @keydown.space.prevent="!item.disabled && toggleSelection(option.value, item.value, !isSelected(option.value, item.value))"
+                        @click.stop="
+                          !item.disabled &&
+                          toggleSelection(
+                            option.value,
+                            item.value,
+                            !isSelected(option.value, item.value)
+                          )
+                        "
+                        @keydown.enter.prevent="
+                          !item.disabled &&
+                          toggleSelection(
+                            option.value,
+                            item.value,
+                            !isSelected(option.value, item.value)
+                          )
+                        "
+                        @keydown.space.prevent="
+                          !item.disabled &&
+                          toggleSelection(
+                            option.value,
+                            item.value,
+                            !isSelected(option.value, item.value)
+                          )
+                        "
                       >
                         <span class="selection-item-content">
                           <a-checkbox
                             :checked="isSelected(option.value, item.value)"
                             :disabled="item.disabled"
                             @click.stop
-                            @change="toggleSelection(option.value, item.value, $event.target.checked)"
+                            @change="
+                              toggleSelection(option.value, item.value, $event.target.checked)
+                            "
                           />
                           <span class="selection-label">{{ item.label }}</span>
                         </span>
@@ -94,7 +124,13 @@
         </div>
       </div>
     </div>
-    <a-alert v-if="disabled && disabledReason" type="info" show-icon class="share-disabled-alert" :message="disabledReason" />
+    <a-alert
+      v-if="disabled && disabledReason"
+      type="info"
+      show-icon
+      class="share-disabled-alert"
+      :message="disabledReason"
+    />
   </div>
 </template>
 
@@ -179,11 +215,15 @@ const currentDepartmentId = computed(() => {
 
 const currentUserUid = computed(() => userStore.uid || '')
 const normalizedAllowedAccessLevels = computed(() => {
-  const allowed = props.allowedAccessLevels.filter((level) => ['global', 'department', 'user'].includes(level))
+  const allowed = props.allowedAccessLevels.filter((level) =>
+    ['global', 'department', 'user'].includes(level)
+  )
   return allowed.length ? allowed : ['global']
 })
 const shareModeOptions = computed(() =>
-  baseShareModeOptions.filter((option) => normalizedAllowedAccessLevels.value.includes(option.value))
+  baseShareModeOptions.filter((option) =>
+    normalizedAllowedAccessLevels.value.includes(option.value)
+  )
 )
 
 const departmentOptions = computed(() =>
@@ -246,7 +286,9 @@ const normalizeActiveConfig = () => {
 
 const initConfig = () => {
   syncingFromProps.value = true
-  const requestedAccessLevel = ['global', 'department', 'user'].includes(props.modelValue?.access_level)
+  const requestedAccessLevel = ['global', 'department', 'user'].includes(
+    props.modelValue?.access_level
+  )
     ? props.modelValue.access_level
     : 'global'
   config.access_level = normalizedAllowedAccessLevels.value.includes(requestedAccessLevel)
@@ -263,7 +305,8 @@ const initConfig = () => {
 const emitConfig = () => {
   emit('update:modelValue', {
     access_level: config.access_level,
-    department_ids: config.access_level === 'department' ? normalizeDepartmentIds(config.department_ids) : [],
+    department_ids:
+      config.access_level === 'department' ? normalizeDepartmentIds(config.department_ids) : [],
     user_uids: config.access_level === 'user' ? normalizeUserUids(config.user_uids) : []
   })
 }
@@ -314,7 +357,9 @@ const toggleSelection = (accessLevel, value, checked) => {
   }
 
   const uid = String(value)
-  const selected = checked ? [...config.user_uids, uid] : config.user_uids.filter((item) => item !== uid)
+  const selected = checked
+    ? [...config.user_uids, uid]
+    : config.user_uids.filter((item) => item !== uid)
   config.user_uids = normalizeUserUids(selected)
   ensureCurrentUser()
 }
@@ -553,7 +598,6 @@ defineExpose({
     }
   }
 }
-
 </style>
 
 <style lang="less">

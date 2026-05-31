@@ -166,7 +166,6 @@
           <div v-show="activeTab === 'department'" v-if="userStore.isSuperAdmin">
             <DepartmentManagementComponent />
           </div>
-
         </div>
       </div>
     </div>
@@ -176,7 +175,16 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { CircleUser, ExternalLink, Settings, Star, SquareTerminal, User, Users, X } from 'lucide-vue-next'
+import {
+  CircleUser,
+  ExternalLink,
+  Settings,
+  Star,
+  SquareTerminal,
+  User,
+  Users,
+  X
+} from 'lucide-vue-next'
 import AccountSettingsComponent from '@/components/AccountSettingsComponent.vue'
 import AgentEnvSettingsCard from '@/components/AgentEnvSettingsCard.vue'
 import BasicSettingsSection from '@/components/BasicSettingsSection.vue'
