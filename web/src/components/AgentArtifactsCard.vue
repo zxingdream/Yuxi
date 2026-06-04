@@ -7,11 +7,7 @@
         :title="`打开 ${file.name}`"
         @click="openPreview(file)"
       >
-        <component
-          :is="getFileIcon(file.path)"
-          class="item-icon"
-          :style="{ color: getFileIconColor(file.path) }"
-        />
+        <FileTypeIcon :name="file.path" :size="20" class="item-icon" />
         <div class="item-meta">
           <div class="item-name">{{ file.name }}</div>
           <div class="item-desc">{{ getFileMetaLabel(file.path) }}</div>
@@ -41,7 +37,7 @@ import { computed, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { Download, LoaderCircle, Save } from 'lucide-vue-next'
 import { threadApi } from '@/apis/agent_api'
-import { getFileIcon, getFileIconColor } from '@/utils/file_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import { downloadViewerFile } from '@/apis/viewer_filesystem'
 
 const props = defineProps({

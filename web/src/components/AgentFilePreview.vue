@@ -5,11 +5,7 @@
   >
     <div v-if="showHeader" class="preview-header">
       <div class="file-title">
-        <component
-          v-if="showFileIcon"
-          :is="getFileIcon(filePath)"
-          :style="{ color: getFileIconColor(filePath), fontSize: '18px' }"
-        />
+        <FileTypeIcon v-if="showFileIcon" :name="filePath" :size="18" />
         <span class="file-path-title">{{ filePath }}</span>
       </div>
       <div class="modal-actions">
@@ -269,8 +265,8 @@ import {
 } from 'lucide-vue-next'
 import hljs from 'highlight.js/lib/common'
 import MarkdownPreview from '@/components/common/MarkdownPreview.vue'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import { useThemeStore } from '@/stores/theme'
-import { getFileIcon, getFileIconColor } from '@/utils/file_utils'
 import { escapeHtml } from '@/utils/html'
 import {
   getCodeLanguageByPath,

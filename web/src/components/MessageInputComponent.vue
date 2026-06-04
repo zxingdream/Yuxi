@@ -60,9 +60,10 @@
               @click="insertMention(item)"
             >
               <div class="file-info-left">
-                <component
-                  :is="item.is_dir ? FolderFilled : getFileIcon(item.label)"
-                  :style="{ color: item.is_dir ? '#ffa940' : getFileIconColor(item.label) }"
+                <FileTypeIcon
+                  :name="item.label"
+                  :is-dir="item.is_dir"
+                  :size="16"
                   class="file-type-icon"
                 />
                 <span class="file-name" :title="item.label">
@@ -280,10 +281,10 @@ import {
   h,
   render
 } from 'vue'
-import { SendOutlined, ArrowUpOutlined, PauseOutlined, FolderFilled } from '@ant-design/icons-vue'
+import { SendOutlined, ArrowUpOutlined, PauseOutlined } from '@ant-design/icons-vue'
 import { Paperclip } from 'lucide-vue-next'
 import { searchMentionFiles } from '@/apis/mention_api'
-import { getFileIcon, getFileIconColor } from '@/utils/file_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import {
   getMentionIconComponent,
   getMentionIconStyle,
@@ -472,14 +473,25 @@ const createEditorMentionElement = (segment) => {
   const icon = document.createElement('span')
   icon.className = 'mention-ref-icon'
   icon.dataset.vueIcon = 'true'
-  Object.assign(icon.style, getMentionIconStyle(segment.type, segment.value) || {})
-  render(
-    h(getMentionIconComponent(segment.type, segment.value), {
-      size: MENTION_ICON_SIZE,
-      strokeWidth: MENTION_ICON_STROKE_WIDTH
-    }),
-    icon
-  )
+  if (segment.type === 'file') {
+    render(
+      h(FileTypeIcon, {
+        name: segment.value,
+        isDir: segment.value.endsWith('/'),
+        size: MENTION_ICON_SIZE
+      }),
+      icon
+    )
+  } else {
+    Object.assign(icon.style, getMentionIconStyle(segment.type, segment.value) || {})
+    render(
+      h(getMentionIconComponent(segment.type, segment.value), {
+        size: MENTION_ICON_SIZE,
+        strokeWidth: MENTION_ICON_STROKE_WIDTH
+      }),
+      icon
+    )
+  }
   token.appendChild(icon)
 
   const label = document.createElement('span')

@@ -86,12 +86,7 @@
           />
         </span>
         <span class="name-cell">
-          <Folder v-if="entry.is_dir" :size="17" class="folder-icon" />
-          <component
-            v-else
-            :is="getFileIcon(entry.name || entry.path)"
-            :style="{ color: getFileIconColor(entry.name || entry.path), fontSize: '16px' }"
-          />
+          <FileTypeIcon :name="entry.name || entry.path" :is-dir="entry.is_dir" :size="17" />
           <span class="entry-name" :title="entry.name">{{ entry.name }}</span>
         </span>
         <span>{{ entry.is_dir ? '-' : formatFileSize(entry.size) }}</span>
@@ -147,13 +142,9 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Download, Folder, ListChecks, MoreHorizontal, Trash2 } from 'lucide-vue-next'
-import {
-  formatFileSize,
-  formatRelativeTime,
-  getFileIcon,
-  getFileIconColor
-} from '@/utils/file_utils'
+import { Download, ListChecks, MoreHorizontal, Trash2 } from 'lucide-vue-next'
+import { formatFileSize, formatRelativeTime } from '@/utils/file_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 
 const props = defineProps({
   entries: { type: Array, default: () => [] },

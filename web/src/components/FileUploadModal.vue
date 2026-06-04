@@ -293,7 +293,7 @@
             @click="openWorkspaceDirectory(item.path)"
           >
             <a-checkbox disabled />
-            <Folder :size="14" class="workspace-file-icon" />
+            <FileTypeIcon is-dir :size="16" class="workspace-file-icon" />
             <span class="workspace-file-name" :title="item.path">{{ item.name }}</span>
           </button>
 
@@ -308,7 +308,7 @@
               :disabled="!item.supported || chunkLoading"
               @change="toggleWorkspacePath(item.path, $event.target.checked)"
             />
-            <FileText :size="14" class="workspace-file-icon" />
+            <FileTypeIcon :name="item.path" :size="16" class="workspace-file-icon" />
             <span class="workspace-file-name" :title="item.path">{{ item.path }}</span>
             <span class="workspace-file-size">{{ formatFileSize(item.size) }}</span>
           </label>
@@ -423,9 +423,7 @@ import { ReloadOutlined } from '@ant-design/icons-vue'
 import {
   FileUp,
   FolderUp,
-  Folder,
   FolderOpen,
-  FileText,
   ArrowLeft,
   RotateCw,
   CircleHelp,
@@ -439,6 +437,7 @@ import {
 } from 'lucide-vue-next'
 import { buildChunkParamsPayload } from '@/utils/chunk_presets'
 import ChunkParamsConfig from '@/components/ChunkParamsConfig.vue'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 
 const props = defineProps({
   visible: {

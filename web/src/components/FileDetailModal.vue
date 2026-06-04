@@ -12,7 +12,7 @@
       <div class="modal-title-wrapper">
         <!-- 左侧：文件名和图标 -->
         <div class="file-title">
-          <component :is="fileIcon" :style="{ color: fileIconColor, fontSize: '18px' }" />
+          <FileTypeIcon :name="file?.filename" :size="18" />
           <span class="file-name">{{ file?.filename || '文件详情' }}</span>
         </div>
 
@@ -123,9 +123,9 @@ import { useDatabaseStore } from '@/stores/database'
 import { message } from 'ant-design-vue'
 import { documentApi } from '@/apis/knowledge_api'
 import { mergeChunks } from '@/utils/chunkUtils'
-import { getFileIcon, getFileIconColor } from '@/utils/file_utils'
 import { getPreviewTypeByPath } from '@/utils/file_preview'
 import MarkdownPreview from '@/components/common/MarkdownPreview.vue'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import { Download, ChevronDown, FileText, X } from 'lucide-vue-next'
 
 const store = useDatabaseStore()
@@ -137,10 +137,6 @@ const visible = computed({
 
 const file = computed(() => store.selectedFile)
 const loading = computed(() => store.state.fileDetailLoading)
-
-// 文件图标
-const fileIcon = computed(() => getFileIcon(file.value?.filename))
-const fileIconColor = computed(() => getFileIconColor(file.value?.filename))
 
 const downloadingOriginal = ref(false)
 const downloadingMarkdown = ref(false)

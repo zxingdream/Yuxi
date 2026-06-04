@@ -226,24 +226,12 @@
         <div v-if="column.key === 'filename'">
           <template v-if="record.is_folder">
             <span class="folder-row" @click="toggleExpand(record)">
-              <component
-                :is="
-                  expandedRowKeys.includes(record.file_id) ? h(FolderOpenFilled) : h(FolderFilled)
-                "
-                style="margin-right: 8px; color: #ffb800; font-size: 16px"
-              />
+              <FileTypeIcon is-dir :size="16" :style="{ marginRight: '8px' }" />
               {{ record.filename }}
             </span>
           </template>
           <a-button v-else class="main-btn" type="link" @click="openFileDetail(record)">
-            <component
-              :is="getFileIcon(record.displayName || text)"
-              :style="{
-                marginRight: '0',
-                color: getFileIconColor(record.displayName || text),
-                fontSize: '16px'
-              }"
-            />
+            <FileTypeIcon :name="record.displayName || text" :size="16" :style="{ marginRight: '8px' }" />
             {{ record.displayName || text }}
           </a-button>
         </div>
@@ -389,8 +377,6 @@ import {
   HourglassFilled,
   CloseCircleFilled,
   ClockCircleFilled,
-  FolderFilled,
-  FolderOpenFilled,
   FileTextFilled
 } from '@ant-design/icons-vue'
 import {
@@ -1167,9 +1153,10 @@ const handleIndexConfigCancel = () => {
 }
 
 // 导入工具函数
-import { getFileIcon, getFileIconColor, formatStandardTime } from '@/utils/file_utils'
+import { formatStandardTime } from '@/utils/file_utils'
 import { buildChunkParamsPayload, isPlainObject } from '@/utils/chunk_presets'
 import ChunkParamsConfig from '@/components/ChunkParamsConfig.vue'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 </script>
 
 <style scoped>
@@ -1282,6 +1269,8 @@ import ChunkParamsConfig from '@/components/ChunkParamsConfig.vue'
 }
 
 .my-table .main-btn {
+  display: flex;
+  justify-content: center;
   padding: 0;
   height: auto;
   line-height: 1.4;

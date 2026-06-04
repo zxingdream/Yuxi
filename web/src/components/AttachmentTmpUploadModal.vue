@@ -22,8 +22,8 @@
 
     <div v-if="fileItems.length" class="attachment-list">
       <div v-for="item in fileItems" :key="item.localId" class="attachment-item">
-        <div class="attachment-file-icon" :style="{ color: getFileIconColor(item.fileName) }">
-          <component :is="getFileIcon(item.fileName)" />
+        <div class="attachment-file-icon">
+          <FileTypeIcon :name="item.fileName" :size="20" />
         </div>
 
         <div class="attachment-item-content">
@@ -152,7 +152,7 @@ import { message } from 'ant-design-vue'
 import { ChevronDown, ChevronUp, X } from 'lucide-vue-next'
 import { threadApi } from '@/apis'
 import { ocrApi } from '@/apis/system_api'
-import { getFileIcon, getFileIconColor } from '@/utils/file_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 
 const props = defineProps({
   open: { type: Boolean, default: false },

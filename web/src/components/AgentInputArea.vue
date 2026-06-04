@@ -47,8 +47,8 @@
             :key="attachment.fileId"
             class="attachment-file-card"
           >
-            <div class="attachment-file-icon" :style="{ color: attachment.iconColor }">
-              <component :is="attachment.icon" />
+            <div class="attachment-file-icon">
+              <FileTypeIcon :name="attachment.name" :size="18" />
             </div>
             <div class="attachment-file-body">
               <div class="attachment-file-name" :title="attachment.name">{{ attachment.name }}</div>
@@ -95,6 +95,7 @@ import ImagePreviewComponent from '@/components/ImagePreviewComponent.vue'
 import AttachmentOptionsComponent from '@/components/AttachmentOptionsComponent.vue'
 import { X } from 'lucide-vue-next'
 import { normalizeAttachmentPreviews } from '@/utils/file_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },

@@ -246,10 +246,10 @@
                 </div>
                 <div v-if="currentStateFiles.length" class="state-list">
                   <div v-for="file in currentStateFiles" :key="file.key" class="state-list-item">
-                    <component
-                      :is="file.icon"
+                    <FileTypeIcon
+                      :name="file.name || file.path"
+                      :size="18"
                       class="state-list-item-icon"
-                      :style="{ color: file.iconColor }"
                     />
                     <div class="state-list-item-body">
                       <div class="state-list-item-title">{{ file.name }}</div>
@@ -274,10 +274,10 @@
                     :title="`打开 ${file.name}`"
                     @click="openPanelPreview(file)"
                   >
-                    <component
-                      :is="file.icon"
+                    <FileTypeIcon
+                      :name="file.name || file.path"
+                      :size="18"
                       class="state-list-item-icon"
-                      :style="{ color: file.iconColor }"
                     />
                     <div class="state-list-item-body">
                       <div class="state-list-item-title">{{ file.name }}</div>
@@ -362,7 +362,8 @@ import {
 } from 'vue'
 import { message } from 'ant-design-vue'
 import { RefreshCw, SquareCheck } from 'lucide-vue-next'
-import { getFileIcon, getFileIconColor, formatFileSize } from '@/utils/file_utils'
+import { formatFileSize } from '@/utils/file_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import { generatePixelAvatar } from '@/utils/pixelAvatar'
 import {
   CheckCircleOutlined,
@@ -720,9 +721,7 @@ const currentArtifactFiles = computed(() =>
     .map((path) => ({
       path,
       name: getPanelFileName({ path }),
-      meta: getArtifactMetaLabel(path),
-      icon: getFileIcon(path),
-      iconColor: getFileIconColor(path)
+      meta: getArtifactMetaLabel(path)
     }))
 )
 const currentTodos = computed(() => {
@@ -780,9 +779,7 @@ const currentStateFiles = computed(() => {
       key: path,
       path,
       name,
-      meta: [status, sizeLabel === '-' ? '' : sizeLabel, path].filter(Boolean).join(' · '),
-      icon: getFileIcon(name || path),
-      iconColor: getFileIconColor(name || path)
+      meta: [status, sizeLabel === '-' ? '' : sizeLabel, path].filter(Boolean).join(' · ')
     })
   }
 

@@ -12,7 +12,15 @@
         :data-mention-value="editable ? segment.value : undefined"
         :title="segment.raw"
       >
+        <FileTypeIcon
+          v-if="segment.type === 'file'"
+          class="mention-ref-icon"
+          :name="segment.value"
+          :is-dir="segment.value.endsWith('/')"
+          :size="MENTION_ICON_SIZE"
+        />
         <component
+          v-else
           :is="getMentionIconComponent(segment.type, segment.value)"
           class="mention-ref-icon"
           :style="getMentionIconStyle(segment.type, segment.value)"
@@ -34,6 +42,7 @@ import {
   MENTION_ICON_STROKE_WIDTH
 } from '@/utils/mention_icon_utils'
 import { getMentionDisplayLabel, parseMentionText } from '@/utils/mention_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 
 const props = defineProps({
   content: {

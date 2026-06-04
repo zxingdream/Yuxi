@@ -121,8 +121,8 @@
       :key="attachment.fileId"
       class="message-attachment-file"
     >
-      <div class="message-attachment-icon" :style="{ color: attachment.iconColor }">
-        <component :is="attachment.icon" />
+      <div class="message-attachment-icon">
+        <FileTypeIcon :name="attachment.name" :size="18" />
       </div>
       <div class="message-attachment-body">
         <div class="message-attachment-name" :title="attachment.name">
@@ -148,6 +148,7 @@ import { storeToRefs } from 'pinia'
 import { MessageProcessor } from '@/utils/messageProcessor'
 import { normalizeAttachmentPreviews } from '@/utils/file_utils'
 import { buildMentionDisplayLabels } from '@/utils/mention_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import { enrichTaskToolCalls } from '@/components/ToolCallingResult/toolRegistry'
 
 const props = defineProps({

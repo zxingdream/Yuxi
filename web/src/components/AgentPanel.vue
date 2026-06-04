@@ -16,11 +16,7 @@
               :title="tab.path"
               @click="activatePreviewTab(tab.path)"
             >
-              <component
-                :is="getFileIcon(tab.path)"
-                class="preview-tab-icon"
-                :style="{ color: getFileIconColor(tab.path) }"
-              />
+              <FileTypeIcon :name="tab.path" :size="16" class="preview-tab-icon" />
               <span class="preview-tab-name">{{ tab.name }}</span>
             </button>
             <button
@@ -137,7 +133,7 @@ import { Download, Folders, RefreshCw, Trash2, X } from 'lucide-vue-next'
 import { Modal, message } from 'ant-design-vue'
 import FileTreeComponent from '@/components/FileTreeComponent.vue'
 import AgentFilePreview from '@/components/AgentFilePreview.vue'
-import { getFileIcon, getFileIconColor } from '@/utils/file_utils'
+import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import {
   deleteViewerFile,
   downloadViewerFile,
