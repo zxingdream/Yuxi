@@ -24,6 +24,25 @@
 
 导航：[项目介绍](https://xerrors.github.io/Yuxi/) ｜ [快速开始](https://xerrors.github.io/Yuxi/intro/quick-start) ｜ [开发路线图](https://xerrors.github.io/Yuxi/develop-guides/roadmap) | [0.7 版本特性](http://xhslink.com/o/5Y6QWnmjF2d)；最新开发动态，详见 [changelog](https://xerrors.github.io/Yuxi/develop-guides/changelog)。
 
+🩷 赞助商
+<table>
+  <tr>
+    <td style="width: 220px; padding: 8px 12px 8px 8px; vertical-align: middle;">
+      < img 
+        width="220" 
+        height="64" 
+        alt="7fb163d0fb02740948521dbcaf6191ea" 
+        src="https://github.com/user-attachments/assets/996fb052-5491-44e6-bb7f-f71af752b3b4"
+      />
+    </td>
+    <td style="padding: 8px 8px 8px 0; vertical-align: middle;">
+      <p style="margin: 0 0 4px 0;">
+        感谢 <a href=" ">随想AI网关</a > 对本项目的赞助！
+        随想AI网关 是一家可靠高效的 API 中继服务提供商，提供 Claude、Codex、Gemini 等的中继服务。注重隐私的中转站·无数据倒卖·无模型掺水，隐私，透明，极速售后。新账户注册每日签到就送 0.5 元测试额度，充值额度 1:1，无需订阅，按量付费。
+      </p >
+    </td>
+  </tr>
+</table>
 
 ![image-20260606190609377](https://xerrors.oss-cn-shanghai.aliyuncs.com/github/image-20260606235615139.png)
 
