@@ -52,13 +52,17 @@ Yuxi 支持多种文档格式的智能解析，从简单的文本文件到复杂
 | MinerU Official | 复杂文档 | 无 | 官方云服务，开箱即用 |
 | PP-Structure-V3 | 表格、票据 | GPU | 专业版面解析 |
 | DeepSeek OCR | 智能理解 | 无 | 云端服务，Markdown 输出 |
+| PaddleOCR-VL-1.6 | 复杂文档、表格、图片 PDF | 无 | 百度 AI Studio 云端服务，输出 Markdown |
+| PP-OCRv6 | 基础文字识别 | 无 | 百度 AI Studio 云端 OCR，输出纯文本 |
 
 ### 选择建议
 
 - **个人使用或 CPU 环境**：选择 RapidOCR，免费且资源占用低
 - **高精度需求**：选择 MinerU（需要 GPU）或 MinerU Official
 - **表格密集型文档**：选择 PP-Structure-V3
-- **简单云服务**：选择 DeepSeek OCR
+- **云端版面解析**：选择 PaddleOCR-VL-1.6，适合希望输出 Markdown 的 PDF 或图片文档
+- **云端纯文字识别**：选择 PP-OCRv6，适合只需要提取图片文字的场景
+- **简单云服务**：选择 DeepSeek OCR 或 PaddleOCR API
 
 ## 快速配置
 
@@ -106,6 +110,29 @@ docker compose up paddlex -d
 SILICONFLOW_API_KEY=your-api-key-here
 ```
 
+### PaddleOCR API（百度 AI Studio 云服务）
+
+PaddleOCR API 使用百度 AI Studio 的 Access Token。获取方式：
+
+1. 登录 [百度 AI Studio Access Token 页面](https://aistudio.baidu.com/account/accessToken)
+2. 在页面中复制 Access Token
+3. 在 `.env` 中配置为 `PADDLEOCR_API_TOKEN`
+
+```env
+PADDLEOCR_API_TOKEN=your-access-token-here
+```
+
+如需使用自定义 PaddleOCR API 地址，可额外配置：
+
+```env
+PADDLEOCR_API_URL=https://paddleocr.aistudio-app.com/api/v2/ocr/jobs
+```
+
+配置完成后，重启后端服务，在上传文件或解析临时附件时可以选择：
+
+- `PaddleOCR-VL-1.6`：对应 `paddleocr_vl_1_6`，用于文档版面解析，返回 Markdown
+- `PP-OCRv6`：对应 `paddleocr_pp_ocrv6`，用于基础 OCR，返回按行拼接的纯文本
+
 ## 图片显示配置
 
 上传文档中的图片需要正确配置才能在外部显示：
@@ -120,6 +147,6 @@ HOST_IP=your_server_ip
 
 1. **图片文件必须启用 OCR**：否则无法提取内容
 2. **GPU 要求**：MinerU 和 PP-Structure-V3 需要 GPU 支持
-3. **API 密钥**：部分服务需要额外的 API 密钥配置
+3. **API 密钥**：MinerU Official、DeepSeek OCR、PaddleOCR API 等云服务需要额外的 API 密钥或 Access Token 配置
 4. **超时处理**：复杂文档解析可能耗时较长，可通过 `MINERU_TIMEOUT` 环境变量调整超时时间
 5. **文件大小限制**：单个上传文件大小不超过 100 MB

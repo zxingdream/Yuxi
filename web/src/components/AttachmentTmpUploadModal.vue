@@ -178,7 +178,9 @@ const methodLabels = {
   mineru_ocr: 'MinerU OCR',
   mineru_official: 'MinerU Official',
   pp_structure_v3_ocr: 'PP-Structure V3',
-  deepseek_ocr: 'DeepSeek OCR'
+  deepseek_ocr: 'DeepSeek OCR',
+  paddleocr_vl_1_6: 'PaddleOCR-VL-1.6',
+  paddleocr_pp_ocrv6: 'PP-OCRv6'
 }
 
 const ocrMethodKeys = [
@@ -186,7 +188,9 @@ const ocrMethodKeys = [
   'mineru_ocr',
   'mineru_official',
   'pp_structure_v3_ocr',
-  'deepseek_ocr'
+  'deepseek_ocr',
+  'paddleocr_vl_1_6',
+  'paddleocr_pp_ocrv6'
 ]
 
 const defaultOcrHealthStatus = () =>
@@ -198,6 +202,7 @@ const ocrHealthChecking = ref(false)
 const methodStatusLabels = {
   local: '无需 OCR',
   healthy: '可用',
+  configured: '已配置',
   unavailable: '不可用',
   unhealthy: '异常',
   timeout: '超时',
@@ -318,6 +323,7 @@ const getMethodDescription = (method) => {
   const status = getMethodStatus(method)
   const fallbackMap = {
     healthy: '服务正常',
+    configured: 'Token 已配置，将在解析时验证',
     unavailable: '服务不可用',
     unhealthy: '服务异常',
     timeout: '服务检查超时',
@@ -677,7 +683,8 @@ const formatFileSize = (size) => {
 }
 
 .parse-method-status.status-local,
-.parse-method-status.status-healthy {
+.parse-method-status.status-healthy,
+.parse-method-status.status-configured {
   color: var(--color-success-700);
 }
 

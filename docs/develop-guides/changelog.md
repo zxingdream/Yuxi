@@ -8,6 +8,7 @@
 
 ### 开发记录
 
+- 新增 PaddleOCR 云端 API OCR 解析器：支持 `paddleocr_vl_1_6` 调用 `PaddleOCR-VL-1.6` 输出版面 Markdown，支持 `paddleocr_pp_ocrv6` 调用 `PP-OCRv6` 输出纯 OCR 文本；解析器复用 PaddleOCR jobs 提交、轮询与 JSONL 下载逻辑，健康检查仅校验 `PADDLEOCR_API_TOKEN` 配置状态，不创建真实 OCR 任务；知识库上传与临时附件解析弹窗同步增加两个 OCR 选项。
 - 优化对话消息代码块交互：助手消息中的 Markdown 代码块右上角新增简约复制按钮，支持点击快速复制代码内容并显示短暂“已复制”反馈。
 - 新增历史对话搜索：侧边栏增加“搜索对话”入口，打开命令面板式弹窗，支持默认最近对话、新对话入口、搜索中骨架屏、结果列表、方向键选择与 Enter 跳转；后端新增 `/api/chat/threads/search`，按当前用户 active 对话中的非工具消息 `content` 检索并按对话聚合返回命中片段，同时将侧边栏导航项高度统一调整为 32px。
 - 模型供应商管理前端开放 Anthropic provider type：Provider Type 下拉仅保留 OpenAI Completions API 与 Anthropic Messages API 两种可选项，保存值继续使用后端枚举，并在供应商卡片中展示友好类型名称。

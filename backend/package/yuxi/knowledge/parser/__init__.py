@@ -4,7 +4,7 @@ from yuxi.knowledge.parser.base import (
     DocumentProcessorException,
     OCRException,
 )
-from yuxi.knowledge.parser.factory import DocumentProcessorFactory
+from yuxi.knowledge.parser.factory import PROCESSOR_TYPES, DocumentProcessorFactory
 from yuxi.knowledge.parser.unified import (
     SUPPORTED_FILE_EXTENSIONS,
     MarkdownParseResult,
@@ -18,6 +18,7 @@ __all__ = [
     "DocumentProcessorException",
     "DocumentParserException",
     "OCRException",
+    "PROCESSOR_TYPES",
     "DocumentProcessorFactory",
     "MarkdownParseResult",
     "Parser",

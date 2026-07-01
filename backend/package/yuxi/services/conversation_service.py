@@ -12,7 +12,7 @@ from yuxi.agents.backends.sandbox import (
 )
 from yuxi.agents.buildin import agent_manager
 from yuxi.config import config as app_config
-from yuxi.knowledge.parser import Parser
+from yuxi.knowledge.parser import DocumentProcessorFactory, Parser
 from yuxi.repositories.agent_repository import AgentRepository
 from yuxi.repositories.conversation_repository import ConversationRepository, INVOCATION_CONVERSATION_SOURCES
 from yuxi.services.mention_search_service import invalidate_mention_cache
@@ -29,13 +29,7 @@ MAX_ATTACHMENT_MARKDOWN_CHARS = 32_000  # TODO: 转 MARKDOWN的时候，不应�
 TMP_ATTACHMENT_PREFIX = "tmp/chat_attachments"
 TMP_ATTACHMENT_PARSE_EXTENSIONS = (".pdf", ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")
 TMP_ATTACHMENT_IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")
-TMP_ATTACHMENT_OCR_METHODS = (
-    "rapid_ocr",
-    "mineru_ocr",
-    "mineru_official",
-    "pp_structure_v3_ocr",
-    "deepseek_ocr",
-)
+TMP_ATTACHMENT_OCR_METHODS = tuple(DocumentProcessorFactory.get_available_processors())
 TMP_ATTACHMENT_PARSE_METHODS = ("disable", *TMP_ATTACHMENT_OCR_METHODS)
 
 

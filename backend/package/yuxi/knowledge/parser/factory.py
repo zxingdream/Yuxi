@@ -14,18 +14,22 @@ from yuxi.utils import logger
 # 处理器实例缓存
 _PROCESSOR_CACHE: dict[str, BaseDocumentProcessor] = {}
 
+# 处理器类型映射: processor_type -> (module_path, class_name)
+PROCESSOR_TYPES = {
+    "rapid_ocr": ("yuxi.knowledge.parser.rapid_ocr", "RapidOCRParser"),
+    "mineru_ocr": ("yuxi.knowledge.parser.mineru", "MinerUParser"),
+    "mineru_official": ("yuxi.knowledge.parser.mineru_official", "MinerUOfficialParser"),
+    "pp_structure_v3_ocr": ("yuxi.knowledge.parser.pp_structure_v3", "PPStructureV3Parser"),
+    "deepseek_ocr": ("yuxi.knowledge.parser.deepseek_ocr", "DeepSeekOCRParser"),
+    "paddleocr_vl_1_6": ("yuxi.knowledge.parser.paddleocr_api", "PaddleOCRVLParser"),
+    "paddleocr_pp_ocrv6": ("yuxi.knowledge.parser.paddleocr_api", "PaddleOCRPPOCRv6Parser"),
+}
+
 
 class DocumentProcessorFactory:
     """文档处理器工厂"""
 
-    # 处理器类型映射: processor_type -> (module_path, class_name)
-    PROCESSOR_TYPES = {
-        "rapid_ocr": ("yuxi.knowledge.parser.rapid_ocr", "RapidOCRParser"),
-        "mineru_ocr": ("yuxi.knowledge.parser.mineru", "MinerUParser"),
-        "mineru_official": ("yuxi.knowledge.parser.mineru_official", "MinerUOfficialParser"),
-        "pp_structure_v3_ocr": ("yuxi.knowledge.parser.pp_structure_v3", "PPStructureV3Parser"),
-        "deepseek_ocr": ("yuxi.knowledge.parser.deepseek_ocr", "DeepSeekOCRParser"),
-    }
+    PROCESSOR_TYPES = PROCESSOR_TYPES
 
     @classmethod
     def _build_cache_key(cls, processor_type: str, kwargs: dict[str, Any]) -> str:
@@ -54,6 +58,8 @@ class DocumentProcessorFactory:
                 - "mineru_official": MinerU 官方云服务 API 文档解析
                 - "pp_structure_v3_ocr": PP-Structure-V3 版面解析
                 - "deepseek_ocr": DeepSeek-OCR SiliconFlow API
+                - "paddleocr_vl_1_6": PaddleOCR-VL-1.6 云端 API 文档解析
+                - "paddleocr_pp_ocrv6": PP-OCRv6 云端 API 文字识别
             **kwargs: 处理器初始化参数
 
         Returns:

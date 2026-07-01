@@ -888,7 +888,9 @@ const ocrHealthStatus = ref({
   mineru_ocr: { status: 'unknown', message: '' },
   mineru_official: { status: 'unknown', message: '' },
   pp_structure_v3_ocr: { status: 'unknown', message: '' },
-  deepseek_ocr: { status: 'unknown', message: '' }
+  deepseek_ocr: { status: 'unknown', message: '' },
+  paddleocr_vl_1_6: { status: 'unknown', message: '' },
+  paddleocr_pp_ocrv6: { status: 'unknown', message: '' }
 })
 
 // OCR健康检查状态
@@ -1000,12 +1002,23 @@ const ocrEngineOptions = [
     value: 'deepseek_ocr',
     label: 'DeepSeek OCR',
     description: 'DeepSeek OCR (SiliconFlow)'
+  },
+  {
+    value: 'paddleocr_vl_1_6',
+    label: 'PaddleOCR-VL-1.6',
+    description: 'PaddleOCR-VL-1.6 API'
+  },
+  {
+    value: 'paddleocr_pp_ocrv6',
+    label: 'PP-OCRv6',
+    description: 'PaddleOCR PP-OCRv6 API'
   }
 ]
 
 const ocrStatusLabels = {
   local: '不启用',
   healthy: '可用',
+  configured: '已配置',
   unavailable: '不可用',
   unhealthy: '异常',
   timeout: '超时',
@@ -1033,6 +1046,7 @@ const getOcrDescription = (engine) => {
   const status = getOcrStatus(engine)
   const fallbackMap = {
     healthy: '服务正常',
+    configured: 'Token 已配置，将在解析时验证',
     unavailable: '服务不可用',
     unhealthy: '服务异常',
     timeout: '服务检查超时',
@@ -1872,7 +1886,8 @@ const chunkData = async () => {
 }
 
 .ocr-engine-status.status-local,
-.ocr-engine-status.status-healthy {
+.ocr-engine-status.status-healthy,
+.ocr-engine-status.status-configured {
   color: var(--color-success-700);
 }
 

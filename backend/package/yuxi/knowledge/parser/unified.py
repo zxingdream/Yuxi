@@ -244,7 +244,9 @@ def parse_image(file, params=None):
     if opt_ocr == "disable":
         raise ValueError(
             "图像文件必须启用OCR才能提取文本内容。"
-            "请选择OCR方式 (rapid_ocr/mineru_ocr/mineru_official/pp_structure_v3_ocr/deepseek_ocr) 或移除该文件。"
+            "请选择OCR方式 "
+            "(rapid_ocr/mineru_ocr/mineru_official/pp_structure_v3_ocr/deepseek_ocr/"
+            "paddleocr_vl_1_6/paddleocr_pp_ocrv6) 或移除该文件。"
         )
 
     image_bucket, image_prefix = _resolve_image_storage_params(processor_params)

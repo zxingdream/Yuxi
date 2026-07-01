@@ -9,6 +9,11 @@ from yuxi.services import chat_service as chat_svc
 from yuxi.services import conversation_service as svc
 
 
+def test_tmp_attachment_ocr_methods_use_processor_factory():
+    assert svc.TMP_ATTACHMENT_OCR_METHODS == tuple(svc.DocumentProcessorFactory.get_available_processors())
+    assert "paddleocr_vl_1_6" in svc.TMP_ATTACHMENT_OCR_METHODS
+
+
 class _DummyUpload:
     def __init__(self, *, filename: str, content_type: str | None, data: bytes):
         self.filename = filename
