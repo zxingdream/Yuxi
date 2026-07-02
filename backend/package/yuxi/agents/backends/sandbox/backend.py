@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import base64
+import uuid
+from contextlib import suppress
 from datetime import datetime
 from pathlib import PurePosixPath
 from typing import Any
@@ -18,7 +20,8 @@ from deepagents.backends.protocol import (
     ReadResult,
     WriteResult,
 )
-from deepagents.backends.sandbox import BaseSandbox
+from deepagents.backends.sandbox import MAX_BINARY_BYTES, BaseSandbox
+from deepagents.backends.utils import _get_file_type
 
 from yuxi import config as conf
 from yuxi.agents.skills.service import sync_thread_readable_skills
@@ -40,6 +43,7 @@ _OUTPUTS_ROOT = f"{_USER_DATA_ROOT}/{OUTPUTS_DIR_NAME}"
 _SKILLS_ROOT = "/" + VIRTUAL_SKILLS_PATH.strip("/")
 _READABLE_ROOTS = (_USER_DATA_ROOT, _SKILLS_ROOT)
 _WRITABLE_ROOTS = (_WORKSPACE_ROOT, _OUTPUTS_ROOT)
+_BINARY_PREVIEW_TOO_LARGE_ERROR = f"Binary file exceeds maximum preview size of {MAX_BINARY_BYTES} bytes"
 
 
 def _normalize_path(path: str) -> str:
@@ -162,6 +166,11 @@ def _looks_like_binary(content: bytes) -> bool:
         return True
 
 
+def _is_utf8_decode_failure(exc: Exception) -> bool:
+    detail = str(exc).lower()
+    return "utf-8" in detail and "can't decode" in detail
+
+
 class ProvisionerSandboxBackend(BaseSandbox):
     def __init__(
         self,
@@ -254,6 +263,65 @@ class ProvisionerSandboxBackend(BaseSandbox):
             return base64.b64decode(content, validate=True)
         return content.encode("utf-8")
 
+    def _file_size_bytes(self, path: str) -> int:
+        path_b64 = base64.b64encode(path.encode("utf-8")).decode("ascii")
+        command = (
+            'python3 -c "'
+            "import base64, os, stat; "
+            f"path = base64.b64decode('{path_b64}').decode('utf-8'); "
+            "st = os.stat(path); "
+            "print(st.st_size if stat.S_ISREG(st.st_mode) else -1)"
+            '"'
+        )
+        result = self.execute(command)
+        if result.exit_code not in (0, None):
+            detail = (result.output or "").strip()
+            raise RuntimeError(detail or f"failed to stat '{path}'")
+
+        output = (result.output or "").strip().splitlines()
+        try:
+            size = int(output[-1])
+        except (IndexError, ValueError) as exc:
+            raise RuntimeError(f"failed to stat '{path}'") from exc
+        if size < 0:
+            raise IsADirectoryError(path)
+        return size
+
+    def _read_file_base64(self, path: str) -> str:
+        path_b64 = base64.b64encode(path.encode("utf-8")).decode("ascii")
+        output_path = f"/tmp/yuxi-read-file-{uuid.uuid4().hex}.b64"
+        output_path_b64 = base64.b64encode(output_path.encode("utf-8")).decode("ascii")
+        command = (
+            'python3 -c "'
+            "import base64; "
+            f"path = base64.b64decode('{path_b64}').decode('utf-8'); "
+            f"output_path = base64.b64decode('{output_path_b64}').decode('utf-8'); "
+            "open(output_path, 'w').write(base64.b64encode(open(path, 'rb').read()).decode('ascii'))"
+            '"'
+        )
+        client = self._get_client()
+        try:
+            result = client.shell.exec_command(
+                command=command,
+                timeout=self._command_timeout_seconds,
+                truncate=False,
+            )
+            output = result.data.output or ""
+            if result.data.exit_code not in (0, None):
+                raise RuntimeError(output.strip() or f"failed to read '{path}'")
+
+            content = self._read_binary(output_path).decode("ascii").strip()
+            base64.b64decode(content, validate=True)
+            return content
+        finally:
+            with suppress(Exception):
+                client.shell.exec_command(command=f"rm -f {output_path}", timeout=10)
+
+    def _read_base64_file(self, path: str) -> ReadResult:
+        if self._file_size_bytes(path) > MAX_BINARY_BYTES:
+            return ReadResult(error=_BINARY_PREVIEW_TOO_LARGE_ERROR)
+        return ReadResult(file_data={"content": self._read_file_base64(path), "encoding": "base64"})
+
     def read(
         self,
         file_path: str,
@@ -269,17 +337,23 @@ class ProvisionerSandboxBackend(BaseSandbox):
             return ReadResult(error=_permission_error("read", normalized_path))
 
         try:
-            content = self._read_binary(normalized_path, offset=offset, limit=limit)
-            if _looks_like_binary(content):
-                content = self._read_binary(normalized_path)
+            if _get_file_type(normalized_path) != "text":
+                return self._read_base64_file(normalized_path)
+
+            try:
+                content = self._read_binary(normalized_path, offset=offset, limit=limit)
+            except Exception as exc:  # noqa: BLE001
+                if not _is_utf8_decode_failure(exc):
+                    raise
+                return self._read_base64_file(normalized_path)
+
+            if not _looks_like_binary(content):
+                return ReadResult(file_data={"content": content.decode("utf-8"), "encoding": "utf-8"})
+
+            return self._read_base64_file(normalized_path)
         except Exception as exc:  # noqa: BLE001
             error = _describe_read_error(file_path, exc)
             return ReadResult(error=error.removeprefix("Error: "))
-
-        if _looks_like_binary(content):
-            return ReadResult(file_data={"content": base64.b64encode(content).decode("ascii"), "encoding": "base64"})
-
-        return ReadResult(file_data={"content": content.decode("utf-8"), "encoding": "utf-8"})
 
     def execute(self, command: str, *, timeout: int | None = None) -> ExecuteResponse:
         """Execute a shell command in the sandbox.

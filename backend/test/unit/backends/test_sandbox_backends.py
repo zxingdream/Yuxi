@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import base64
 import threading
 from types import MethodType, SimpleNamespace
 
 import pytest
-from deepagents.backends.protocol import GlobResult
+from deepagents.backends.protocol import GlobResult, ReadResult
+from deepagents.backends.sandbox import MAX_BINARY_BYTES
 from langchain_core.messages import ToolMessage
+from langgraph.prebuilt.tool_node import ToolRuntime
 from yuxi.agents.backends.composite import (
     CustomCompositeBackend,
     create_agent_composite_backend,
@@ -452,16 +455,146 @@ def test_provisioner_read_decodes_explicit_base64(monkeypatch) -> None:
     assert backend._read_binary("/home/gem/user-data/outputs/file.bin") == b"Hello"
 
 
+def test_provisioner_read_file_base64_reads_temp_file_not_shell_output(monkeypatch) -> None:
+    monkeypatch.setattr("yuxi.agents.backends.sandbox.backend.get_sandbox_provider", lambda: object())
+    backend = ProvisionerSandboxBackend(thread_id="thread-1", uid="user-1")
+    expected = base64.b64encode(b"\x89PNG\r\n\x1a\nimage-bytes").decode("ascii")
+    shell_calls = []
+
+    def _exec_command(**kwargs):
+        shell_calls.append(kwargs)
+        return SimpleNamespace(
+            data=SimpleNamespace(
+                exit_code=0,
+                output="broken\n[... Observation truncated due to length ...]\nbase64",
+            )
+        )
+
+    def _read_file(**kwargs):
+        assert kwargs["file"].startswith("/tmp/yuxi-read-file-")
+        return SimpleNamespace(data=SimpleNamespace(content=expected))
+
+    fake_client = SimpleNamespace(
+        shell=SimpleNamespace(exec_command=_exec_command),
+        file=SimpleNamespace(read_file=_read_file),
+    )
+    backend._get_client = MethodType(lambda self: fake_client, backend)
+
+    result = backend._read_file_base64("/home/gem/user-data/workspace/image.png")
+
+    assert result == expected
+    assert len(shell_calls) == 2
+    assert shell_calls[0]["command"].startswith("python3 -c")
+    assert shell_calls[1]["command"].startswith("rm -f /tmp/yuxi-read-file-")
+
+
 def test_provisioner_read_reports_binary_files(monkeypatch) -> None:
     monkeypatch.setattr("yuxi.agents.backends.sandbox.backend.get_sandbox_provider", lambda: object())
     backend = ProvisionerSandboxBackend(thread_id="thread-1", uid="user-1")
-    monkeypatch.setattr(backend, "_read_binary", lambda path, offset=0, limit=None: b"\x89PNG\r\n\x1a\n")
+    monkeypatch.setattr(backend, "_file_size_bytes", lambda _path: 8)
+    monkeypatch.setattr(backend, "_read_file_base64", lambda _path: "iVBORw0KGgo=")
 
     result = backend.read("/home/gem/user-data/image.png")
 
     assert result.error is None
     assert result.file_data is not None
     assert result.file_data["encoding"] == "base64"
+
+
+def test_provisioner_read_treats_known_non_text_extension_as_base64(monkeypatch) -> None:
+    monkeypatch.setattr("yuxi.agents.backends.sandbox.backend.get_sandbox_provider", lambda: object())
+    backend = ProvisionerSandboxBackend(thread_id="thread-1", uid="user-1")
+    monkeypatch.setattr(backend, "_file_size_bytes", lambda _path: 6)
+    monkeypatch.setattr(backend, "_read_binary", lambda path, offset=0, limit=None: pytest.fail("file API used"))
+    monkeypatch.setattr(backend, "_read_file_base64", lambda _path: "R0lGODlh")
+
+    result = backend.read("/home/gem/user-data/image.gif")
+
+    assert result.error is None
+    assert result.file_data == {"content": "R0lGODlh", "encoding": "base64"}
+
+
+def test_provisioner_read_rejects_large_known_binary_before_read(monkeypatch) -> None:
+    monkeypatch.setattr("yuxi.agents.backends.sandbox.backend.get_sandbox_provider", lambda: object())
+    backend = ProvisionerSandboxBackend(thread_id="thread-1", uid="user-1")
+    read_calls: list[tuple[str, int, int | None]] = []
+    monkeypatch.setattr(backend, "_file_size_bytes", lambda _path: MAX_BINARY_BYTES + 1)
+
+    def _read_binary(path, offset=0, limit=None):
+        read_calls.append((path, offset, limit))
+        return b"\x89PNG\r\n\x1a\n"
+
+    monkeypatch.setattr(backend, "_read_binary", _read_binary)
+    monkeypatch.setattr(backend, "_read_file_base64", lambda _path: pytest.fail("binary file was read"))
+
+    result = backend.read("/home/gem/user-data/large.png")
+
+    assert result.file_data is None
+    assert result.error == f"Binary file exceeds maximum preview size of {MAX_BINARY_BYTES} bytes"
+    assert read_calls == []
+
+
+def test_provisioner_read_rejects_large_unknown_binary_before_full_read(monkeypatch) -> None:
+    monkeypatch.setattr("yuxi.agents.backends.sandbox.backend.get_sandbox_provider", lambda: object())
+    backend = ProvisionerSandboxBackend(thread_id="thread-1", uid="user-1")
+    read_calls: list[tuple[str, int, int | None]] = []
+    monkeypatch.setattr(backend, "_file_size_bytes", lambda _path: MAX_BINARY_BYTES + 1)
+
+    def _read_binary(path, offset=0, limit=None):
+        read_calls.append((path, offset, limit))
+        return b"\x00binary prefix"
+
+    monkeypatch.setattr(backend, "_read_binary", _read_binary)
+
+    result = backend.read("/home/gem/user-data/large.unknown")
+
+    assert result.file_data is None
+    assert result.error == f"Binary file exceeds maximum preview size of {MAX_BINARY_BYTES} bytes"
+    assert read_calls == [("/home/gem/user-data/large.unknown", 0, 2000)]
+
+
+def test_provisioner_read_falls_back_to_base64_on_sandbox_utf8_decode_failure(monkeypatch) -> None:
+    monkeypatch.setattr("yuxi.agents.backends.sandbox.backend.get_sandbox_provider", lambda: object())
+    backend = ProvisionerSandboxBackend(thread_id="thread-1", uid="user-1")
+    monkeypatch.setattr(backend, "_file_size_bytes", lambda _path: 6)
+
+    def _read_binary_raises(path, offset=0, limit=None):
+        raise RuntimeError("'utf-8' codec can't decode byte 0x89 in position 0")
+
+    monkeypatch.setattr(backend, "_read_binary", _read_binary_raises)
+    monkeypatch.setattr(backend, "_read_file_base64", lambda _path: "R0lGODlh")
+
+    result = backend.read("/home/gem/user-data/workspace/uploaded.bin")
+
+    assert result.error is None
+    assert result.file_data == {"content": "R0lGODlh", "encoding": "base64"}
+
+
+def test_read_file_tool_returns_multimodal_block_for_small_binary() -> None:
+    class _Backend:
+        def read(self, path: str, offset: int = 0, limit: int = 100):
+            return ReadResult(file_data={"content": "R0lGODlh", "encoding": "base64"})
+
+    middleware = create_agent_filesystem_middleware(tool_token_limit_before_evict=None)
+    middleware.backend = _Backend()
+    read_tool = next(tool for tool in middleware.tools if tool.name == "read_file")
+    runtime = ToolRuntime(
+        state={},
+        context=None,
+        config={},
+        stream_writer=lambda _: None,
+        tool_call_id="call-read",
+        store=None,
+    )
+
+    result = read_tool.func(file_path="/home/gem/user-data/uploads/image.gif", runtime=runtime)
+
+    assert result.status == "success"
+    assert result.content_blocks == [{"type": "image", "base64": "R0lGODlh", "mime_type": "image/gif"}]
+    assert result.additional_kwargs == {
+        "read_file_path": "/home/gem/user-data/uploads/image.gif",
+        "read_file_media_type": "image/gif",
+    }
 
 
 def test_provisioner_read_reports_invalid_path(monkeypatch) -> None:

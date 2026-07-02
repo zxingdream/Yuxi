@@ -188,6 +188,97 @@ def test_load_chat_model_keeps_non_siliconflow_openai_streaming(monkeypatch):
     assert explicit.disable_streaming is True
 
 
+def test_openai_payload_bridges_read_file_image_tool_result_to_user_role():
+    from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+    from yuxi.agents.models import _ToolCallChunkFixChatOpenAI
+
+    model = _ToolCallChunkFixChatOpenAI(
+        model="namespace/chat-model",
+        api_key="test-key",
+        base_url="https://example.com/v1",
+    )
+
+    payload = model._get_request_payload(
+        [
+            HumanMessage("读一下这张图"),
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "read_file",
+                        "args": {"file_path": "/home/gem/user-data/workspace/a.png"},
+                        "id": "call_image",
+                    }
+                ],
+            ),
+            ToolMessage(
+                content_blocks=[{"type": "image", "base64": "iVBORw0KGgo=", "mime_type": "image/png"}],
+                name="read_file",
+                tool_call_id="call_image",
+            ),
+        ]
+    )
+
+    tool_message = payload["messages"][2]
+    image_message = payload["messages"][3]
+
+    assert tool_message["role"] == "tool"
+    assert isinstance(tool_message["content"], str)
+    assert "image_url" not in tool_message["content"]
+    assert image_message == {
+        "role": "user",
+        "content": [
+            {
+                "type": "text",
+                "text": "Images returned by read_file are attached below. Inspect them when answering.",
+            },
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64,iVBORw0KGgo="}},
+        ],
+    }
+
+
+def test_openai_payload_inserts_tool_image_user_message_after_parallel_tool_block():
+    from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+    from yuxi.agents.models import _ToolCallChunkFixChatOpenAI
+
+    model = _ToolCallChunkFixChatOpenAI(
+        model="namespace/chat-model",
+        api_key="test-key",
+        base_url="https://example.com/v1",
+    )
+
+    payload = model._get_request_payload(
+        [
+            HumanMessage("读图并列目录"),
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "read_file",
+                        "args": {"file_path": "/home/gem/user-data/workspace/a.png"},
+                        "id": "call_image",
+                    },
+                    {"name": "ls", "args": {"path": "/home/gem/user-data/workspace"}, "id": "call_ls"},
+                ],
+            ),
+            ToolMessage(
+                content_blocks=[{"type": "image", "base64": "abc", "mime_type": "image/png"}],
+                name="read_file",
+                tool_call_id="call_image",
+            ),
+            ToolMessage(content="['a.png']", name="ls", tool_call_id="call_ls"),
+        ]
+    )
+
+    assert [message["role"] for message in payload["messages"]] == ["user", "assistant", "tool", "tool", "user"]
+    assert payload["messages"][2]["tool_call_id"] == "call_image"
+    assert payload["messages"][3]["tool_call_id"] == "call_ls"
+    assert payload["messages"][4]["content"][1] == {
+        "type": "image_url",
+        "image_url": {"url": "data:image/png;base64,abc"},
+    }
+
+
 @pytest.mark.asyncio
 async def test_langchain_chat_adapter_preserves_call_response_contract():
     from langchain_core.messages import AIMessage

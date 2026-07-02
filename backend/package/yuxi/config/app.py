@@ -14,6 +14,20 @@ from yuxi.config import cache as runtime_cache
 from yuxi.utils.logging_config import logger
 
 READONLY_CONFIG_FIELDS = frozenset({"save_dir"})
+DEFAULT_OCR_ENGINE = "rapid_ocr"
+
+
+def _get_available_ocr_engines() -> set[str]:
+    from yuxi.knowledge.parser.factory import DocumentProcessorFactory
+
+    return {"disable", *DocumentProcessorFactory.get_available_processors()}
+
+
+def _normalize_default_ocr_engine(value: Any) -> str:
+    engine = str(value or "").strip() or DEFAULT_OCR_ENGINE
+    if engine not in _get_available_ocr_engines():
+        raise ValueError(f"不支持的默认 OCR 引擎: {engine}")
+    return engine
 
 
 class Config(BaseModel):
@@ -47,6 +61,7 @@ class Config(BaseModel):
         default="siliconflow-cn:Pro/MiniMaxAI/MiniMax-M2.5",
         description="内容审查LLM模型",
     )
+    default_ocr_engine: str = Field(default=DEFAULT_OCR_ENGINE, description="默认 OCR 解析引擎")
 
     sandbox_provider: str = Field(default="provisioner", description="沙箱提供者")
     sandbox_provisioner_url: str = Field(default="http://sandbox-provisioner:8002", description="沙箱服务地址")
@@ -84,7 +99,10 @@ class Config(BaseModel):
                 if key in READONLY_CONFIG_FIELDS:
                     logger.warning(f"Readonly config key ignored: {key}")
                 elif key in type(self).model_fields:
-                    setattr(self, key, value)
+                    try:
+                        setattr(self, key, self._normalize_config_value(key, value))
+                    except ValueError as exc:
+                        logger.warning(f"Invalid config key ignored: {key} ({exc})")
                 else:
                     logger.warning(f"Unknown config key: {key}")
 
@@ -170,7 +188,7 @@ class Config(BaseModel):
     def update(self, other: dict[str, Any]) -> None:
         for key, value in other.items():
             if self.can_update(key):
-                setattr(self, key, value)
+                self.set_value(key, value)
             elif key in READONLY_CONFIG_FIELDS:
                 logger.warning(f"Readonly config key ignored: {key}")
             else:
@@ -178,6 +196,16 @@ class Config(BaseModel):
 
     def can_update(self, key: object) -> bool:
         return isinstance(key, str) and key in type(self).model_fields and key not in READONLY_CONFIG_FIELDS
+
+    def set_value(self, key: str, value: Any) -> None:
+        if not self.can_update(key):
+            raise ValueError(f"配置项不可修改: {key}")
+        setattr(self, key, self._normalize_config_value(key, value))
+
+    def _normalize_config_value(self, key: str, value: Any) -> Any:
+        if key == "default_ocr_engine":
+            return _normalize_default_ocr_engine(value)
+        return value
 
 
 config = Config()
