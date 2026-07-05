@@ -445,6 +445,30 @@ def test_build_trajectory_summary_counts_tools_interrupts_and_errors():
     }
 
 
+def test_build_trajectory_summary_counts_human_interrupt_once_with_end_event():
+    interrupt_chunk = {
+        "status": "human_approval_required",
+        "message": "approve?",
+    }
+
+    summary = svc._build_trajectory_summary(
+        [
+            {
+                "seq": "1-0",
+                "event_type": "interrupt",
+                "payload": {"payload": {"reason": "human_approval", "chunk": interrupt_chunk}},
+            },
+            {
+                "seq": "2-0",
+                "event_type": "end",
+                "payload": {"payload": {"status": "interrupted", "chunk": interrupt_chunk}},
+            },
+        ]
+    )
+
+    assert summary["interrupt_count"] == 1
+
+
 def test_build_trajectory_summary_matches_no_id_tool_finish_to_start():
     summary = svc._build_trajectory_summary(
         [

@@ -42,6 +42,7 @@ EVALUATION_SOURCE = "agent_evaluation"
 EVALUATION_FIELDS = ("dataset_name", "dataset_item_id", "experiment_name")
 MAX_REQUEST_ID_LENGTH = 64
 TRAJECTORY_SUMMARY_EVENT_LIMIT = 500
+INTERRUPT_STATUSES = {"ask_user_question_required", "human_approval_required", "interrupted"}
 
 
 async def create_agent_call_run_view(
@@ -251,72 +252,28 @@ async def get_agent_call_run_result_view(
     return _build_agent_call_response(result)
 
 
-def _sequence_value(event: dict[str, Any] | None) -> str | None:
-    if not isinstance(event, dict):
-        return None
-    seq = event.get("seq")
-    return str(seq) if seq is not None else None
-
-
-def _empty_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
-    return {
-        "schema_version": 1,
-        "source": "run_events",
-        "event_count": len(events),
-        "events_truncated": len(events) >= TRAJECTORY_SUMMARY_EVENT_LIMIT,
-        "event_range": {
-            "first_seq": _sequence_value(events[0]) if events else None,
-            "last_seq": _sequence_value(events[-1]) if events else None,
-        },
-        "tool_call_count": 0,
-        "tool_error_count": 0,
-        "interrupt_count": 0,
-        "tools": [],
-    }
-
-
-def _event_payload(event: dict[str, Any]) -> dict[str, Any]:
-    envelope = event.get("payload")
-    if not isinstance(envelope, dict):
-        return {}
-    payload = envelope.get("payload")
-    return payload if isinstance(payload, dict) else {}
-
-
-def _iter_event_chunks(event: dict[str, Any]):
-    payload = _event_payload(event)
-    items = payload.get("items")
-    if isinstance(items, list):
-        for item in items:
-            if isinstance(item, dict):
-                yield item
-
-    chunk = payload.get("chunk")
-    if isinstance(chunk, dict):
-        yield chunk
-
-
-def _tool_key(tool_call_id: str | None, name: str, fallback_index: int) -> str:
-    if tool_call_id:
-        return str(tool_call_id)
-    return f"name:{name}:{fallback_index}"
+async def _load_trajectory_summary(run_id: str) -> dict[str, Any]:
+    """从 run event stream 读取有限事件并生成轻量轨迹摘要。"""
+    events = await list_run_stream_events(run_id, after_seq="0-0", limit=TRAJECTORY_SUMMARY_EVENT_LIMIT)
+    return _build_trajectory_summary(events)
 
 
 def _build_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
-    summary = _empty_trajectory_summary(events)
+    """聚合工具调用、工具错误和人工中断计数，避免暴露完整事件载荷。"""
+    summary = _trajectory_summary_base(events)
     tool_calls: dict[str, str] = {}
     tool_errors: set[str] = set()
     open_tool_keys: dict[str, list[str]] = {}
     fallback_index = 0
 
-    def _next_tool_key(tool_call_id: str | None, name: str, *, is_start: bool, is_finish: bool) -> str:
+    def next_tool_key(tool_call_id: str | None, name: str, *, is_start: bool, is_finish: bool) -> str:
         nonlocal fallback_index
         if tool_call_id:
             return str(tool_call_id)
         if is_finish and open_tool_keys.get(name):
             return open_tool_keys[name].pop(0)
 
-        key = _tool_key(None, name, fallback_index)
+        key = f"name:{name}:{fallback_index}"
         fallback_index += 1
         if is_start and not is_finish:
             open_tool_keys.setdefault(name, []).append(key)
@@ -328,17 +285,13 @@ def _build_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
             summary["interrupt_count"] += 1
 
         for chunk in _iter_event_chunks(event):
-            if event_type != "interrupt" and chunk.get("status") in {
-                "ask_user_question_required",
-                "human_approval_required",
-                "interrupted",
-            }:
+            if _is_interrupt_status_event(event_type, chunk):
                 summary["interrupt_count"] += 1
 
             stream_event = chunk.get("stream_event")
             if isinstance(stream_event, dict) and stream_event.get("type") == "tool_call":
                 name = str(stream_event.get("name") or "unknown")
-                key = _next_tool_key(stream_event.get("tool_call_id"), name, is_start=True, is_finish=False)
+                key = next_tool_key(stream_event.get("tool_call_id"), name, is_start=True, is_finish=False)
                 tool_calls.setdefault(key, name)
 
             tool_event = chunk.get("event")
@@ -348,7 +301,7 @@ def _build_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
 
             name = str(tool_event_data.get("tool_name") or tool_event_data.get("name") or "unknown")
             tool_event_type = tool_event_data.get("event")
-            key = _next_tool_key(
+            key = next_tool_key(
                 tool_event_data.get("tool_call_id"),
                 name,
                 is_start=tool_event_type == "tool-started",
@@ -372,9 +325,51 @@ def _build_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
     return summary
 
 
-async def _load_trajectory_summary(run_id: str) -> dict[str, Any]:
-    events = await list_run_stream_events(run_id, after_seq="0-0", limit=TRAJECTORY_SUMMARY_EVENT_LIMIT)
-    return _build_trajectory_summary(events)
+def _trajectory_summary_base(events: list[dict[str, Any]]) -> dict[str, Any]:
+    """创建轨迹摘要的固定字段，后续只填充聚合计数。"""
+    first_seq = _event_seq(events[0]) if events else None
+    last_seq = _event_seq(events[-1]) if events else None
+    return {
+        "schema_version": 1,
+        "source": "run_events",
+        "event_count": len(events),
+        "events_truncated": len(events) >= TRAJECTORY_SUMMARY_EVENT_LIMIT,
+        "event_range": {"first_seq": first_seq, "last_seq": last_seq},
+        "tool_call_count": 0,
+        "tool_error_count": 0,
+        "interrupt_count": 0,
+        "tools": [],
+    }
+
+
+def _event_seq(event: dict[str, Any]) -> str | None:
+    seq = event.get("seq")
+    return str(seq) if seq is not None else None
+
+
+def _iter_event_chunks(event: dict[str, Any]):
+    payload = _event_payload(event)
+    items = payload.get("items")
+    if isinstance(items, list):
+        for item in items:
+            if isinstance(item, dict):
+                yield item
+
+    chunk = payload.get("chunk")
+    if isinstance(chunk, dict):
+        yield chunk
+
+
+def _event_payload(event: dict[str, Any]) -> dict[str, Any]:
+    envelope = event.get("payload")
+    if not isinstance(envelope, dict):
+        return {}
+    payload = envelope.get("payload")
+    return payload if isinstance(payload, dict) else {}
+
+
+def _is_interrupt_status_event(event_type: str | None, chunk: dict[str, Any]) -> bool:
+    return event_type not in {"interrupt", "end"} and chunk.get("status") in INTERRUPT_STATUSES
 
 
 def _normalize_required_text(value: str | None, *, field_name: str) -> str:
