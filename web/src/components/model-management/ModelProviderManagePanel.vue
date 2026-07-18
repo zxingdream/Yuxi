@@ -21,7 +21,7 @@ import {
 
 import { modelProviderApi } from '@/apis/system_api'
 import { useConfigStore } from '@/stores/config'
-import { modelIcons } from '@/utils/modelIcon'
+import { modelAvatars } from '@/utils/modelIcon'
 import {
   loadModelMetadataCatalog,
   resolveModelDisplayMetadata
@@ -44,10 +44,6 @@ const PROVIDER_TYPE_OPTIONS = [
   { value: 'openai', label: 'OpenAI Completions API' },
   { value: 'anthropic', label: 'Anthropic Messages API' }
 ]
-
-const providerTypeLabelMap = Object.fromEntries(
-  PROVIDER_TYPE_OPTIONS.map((option) => [option.value, option.label])
-)
 
 const MODALITY_DISPLAY = {
   text: { icon: TextInitial, label: '文本输入' },
@@ -143,20 +139,10 @@ const providerStats = computed(() => {
 })
 
 // ============ Helpers ============
-const getProviderIcon = (provider) => {
+const getProviderAvatar = (provider) => {
   const providerId = provider?.provider_id?.toLowerCase()
   const providerType = provider?.provider_type?.toLowerCase()
-  return modelIcons[providerId] || modelIcons[providerType] || modelIcons.default
-}
-
-const getProviderTypeLabel = (providerType) =>
-  providerTypeLabelMap[providerType] || providerType || '-'
-
-const getIconUrl = (icon) => {
-  if (!icon) return modelIcons.default
-  if (typeof icon === 'string') return icon
-  if (icon instanceof URL || icon?.default) return icon.default || icon
-  return modelIcons.default
+  return modelAvatars[providerId] || modelAvatars[providerType] || modelAvatars.default
 }
 
 const getModelDisplayName = (model) => {
@@ -303,14 +289,13 @@ const loadProviders = async () => {
 
 function getProviderInfo(provider) {
   return [
-    { label: 'Provider Type', value: getProviderTypeLabel(provider.provider_type) },
     { label: 'Base URL', value: provider.base_url || '-' },
     { label: '能力', value: provider.capabilities?.join(', ') || 'chat' }
   ]
 }
 
 function getProviderStatus(provider) {
-  if (!provider.is_enabled) return { label: '未启用', level: 'info' }
+  if (!provider.is_enabled) return { label: '未启用', level: 'info', showDot: false }
   if (provider.credential_status === 'warning') return { label: '凭证缺失', level: 'warning' }
   if (provider.is_enabled) return { label: '', level: 'success' }
   return null
@@ -720,11 +705,18 @@ defineExpose({
         @click="openEditProviderModal(provider)"
       >
         <template #icon>
-          <img
-            v-if="getProviderIcon(provider)"
-            :src="getIconUrl(getProviderIcon(provider))"
-            :alt="provider.display_name"
-          />
+          <span
+            class="provider-avatar"
+            role="img"
+            :aria-label="`${provider.display_name} 图标`"
+            :style="{
+              background: getProviderAvatar(provider).background,
+              '--provider-avatar-scale': getProviderAvatar(provider).scale,
+              '--provider-avatar-filter': getProviderAvatar(provider).filter
+            }"
+          >
+            <img :src="getProviderAvatar(provider).icon" alt="" />
+          </span>
         </template>
         <template #footer>
           <button class="view-models-btn" type="button" @click.stop="openModelsModal(provider)">
@@ -1205,9 +1197,27 @@ defineExpose({
   height: 100%;
   min-height: 0;
 
-  :deep(.info-card-icon img) {
-    width: 30px;
-    height: 30px;
+  :deep(.info-card-icon) {
+    border: none;
+    background: transparent;
+  }
+}
+
+.provider-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid rgb(0 0 0 / 6%);
+  border-radius: 8px;
+
+  img {
+    width: calc(100% * var(--provider-avatar-scale));
+    height: calc(100% * var(--provider-avatar-scale));
+    object-fit: contain;
+    filter: var(--provider-avatar-filter);
   }
 }
 
