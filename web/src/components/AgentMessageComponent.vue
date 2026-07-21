@@ -58,6 +58,7 @@
         :key="message.id"
         :content="parsedData.content"
         code-copy
+        rich
         class="message-md"
       />
 
@@ -335,8 +336,8 @@ const parsedData = computed(() => {
   user-select: text;
   word-break: break-word;
   word-wrap: break-word;
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 16px;
+  line-height: 26px;
   box-sizing: border-box;
   color: var(--gray-10000);
   max-width: 100%;
@@ -652,7 +653,7 @@ const parsedData = computed(() => {
 }
 
 .message-md {
-  margin: 8px 0;
+  margin: 4px 0 12px;
 }
 
 .message-image-preview-overlay {
